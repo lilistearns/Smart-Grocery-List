@@ -36,7 +36,7 @@ if __name__ == "__main__":
 
 def dbQuery():
     connection = mysql.connector.connect(
-        host="localhost",      # or your DB server
+        host="localhost",      
         user="comp5500",
         password="1qaz2wsx!QAZ@WSX",
         database="listBase"
@@ -44,18 +44,52 @@ def dbQuery():
 
     if(connection.is_connected()):
         print("Connection to DB successful")
-        #df = pd.read_sql(f"""
-        #    SELECT store, price, quantity, quality 
-        #    FROM items 
-        #    WHERE uid = %s AND item_name = %s
-        #""", conn, params=(uid, item_name))
         connection.close()
+        return True
     else:
         print("Connection to DB unsuccessful")
+        return False
 
+
+def userPreferencesQuery(uid):
+    connection = mysql.connector.connect(
+        host="localhost",      
+        user="comp5500",
+        password="1qaz2wsx!QAZ@WSX",
+        database="listBase"
+    )
+
+    if connection.is_connected():
+        print("Connection to DB successful")
+        query = """
+            SELECT qualPercent, pricePercent, quantPercent, shoppingSize, diet
+            FROM userPreferences 
+            WHERE uid = %s;
+        """
+        cursor = connection.cursor()
+        cursor.execute(query, (uid,))
+        row = cursor.fetchone()
+        connection.close()
+
+        if row:
+            # Convert row to a dictionary or list
+            return {
+                "qualPercent": row[0],
+                "pricePercent": row[1],
+                "quantPercent": row[2],
+                "shoppingSize": row[3],
+                "diet": row[4]
+            }
+        else:
+            print(f"No preferences found for user {uid}")
+            return None
+    else:
+        print("Connection to DB unsuccessful")
+        return None
+    
 
 #query databse for model saved by modelCreator based on uid "model-$uid.h5"
-#uid = (sys.argv[2])
+#uid = (sys.argv[1])
 modelTitle = 'model-' + uid + '.h5'
 model = load_model(f"models/{modelTitle}")
 
@@ -79,14 +113,17 @@ def recommender(data, model, priceWeight, quality_weight, quantity_weight, top):
     return data.sort_values("score", ascending=False).head(top)
 
 
-recommendations = recommender(
-    data,
-    model,
-    priceWeight=60,
-    quality_weight=30,
-    quantity_weight=10,
-    top=3
-)
+prefs = userPreferencesQuery(uid)
+if prefs:
+    recommendations = recommender(
+        data,
+        model,
+        items=prefs,
+        priceWeight=prefs["pricePercent"],
+        qualityWeight=prefs["qualPercent"],
+        quantityWeight=prefs["quantPercent"],
+        top=3
+    )
 
 
 print(recommendations[["store", "price", "quantity", "quality", "score"]])
