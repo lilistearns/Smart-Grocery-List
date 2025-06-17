@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react'
 
 export function Login() {
@@ -14,6 +13,7 @@ export function Login() {
         const url = "http://127.0.0.1:5000/login"
 
         const options = {
+            credentials: "include",
             method: "POST",
             headers: {
             "Content-Type": "application/json"
@@ -30,6 +30,7 @@ export function Login() {
         }
         else{
             console.log("Login Sent: " + JSON.stringify(data))
+            window.location.href = "/"
         }
     }
 

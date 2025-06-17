@@ -14,6 +14,7 @@ export function SignUp() {
         const url = "http://127.0.0.1:5000/signup"
 
         const options = {
+            credentials: "include",
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -30,6 +31,7 @@ export function SignUp() {
         }
         else{
             console.log("Account Sent: " + JSON.stringify(data))
+            window.location.href = "/"
         }
     }
 

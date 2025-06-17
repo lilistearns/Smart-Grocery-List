@@ -12,11 +12,27 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "cachelib"
 app.config['SESSION_CACHELIB'] = FileSystemCache(cache_dir='flask_session', threshold=500)
 app.config["SESSION_USE_SIGNER"] = True
+app.config["SESSION_COOKIE_SECURE"] = True
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 
 Session(app)
 bcrypt = Bcrypt(app)
-CORS(app)
+CORS(app, supports_credentials = True)
 
+
+""" @app.route("/test", methods=["GET"])
+def get():
+   return "Fetching Message..."
+
+
+@app.route("/test", methods=["POST"])
+def post():
+    message = request.json.get("sendMessage")
+
+    if not message:
+        return jsonify({"message": "Please input some text"}), 400
+    else:
+        return jsonify({"message": message}) """
 
 
 @app.route("/", methods=["GET"])
@@ -28,22 +44,8 @@ def getHome():
             "email": email,
         })
     else:
-        return "Not logged in."
+        return jsonify({"error": "Not logged in"})
 
-
-@app.route("/test", methods=["GET"])
-def get():
-   return "Fetching Message..."
-    
-@app.route("/test", methods=["POST"])
-def post():
-    message = request.json.get("sendMessage")
-
-    if not message:
-        return jsonify({"message": "Please input some text"}), 400
-    else:
-        return jsonify({"message": message})
-    
 
 @app.route("/signup", methods=["POST"])
 def create_user():
@@ -51,6 +53,8 @@ def create_user():
     password = request.json.get("sendPassword")
 
     hashed_password = bcrypt.generate_password_hash('password').decode('utf-8')
+
+    session["email"] = email
 
     if not (email and password):
         return jsonify({"message": "Please input an email and a password"}), 400
@@ -82,7 +86,7 @@ def login():
 @app.route("/logout", methods=["POST"])
 def logout():
     session.pop("email", None)
-    return "Logged Out"
+    return jsonify({"action": "Logged Out"})
 
 
 
