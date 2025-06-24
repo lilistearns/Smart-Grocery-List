@@ -89,7 +89,7 @@ def userPreferencesQuery(uid):
     
 
 #query databse for model saved by modelCreator based on uid "model-$uid.h5"
-#uid = (sys.argv[1])
+uid = (sys.argv[1])
 modelTitle = 'model-' + uid + '.h5'
 model = load_model(f"models/{modelTitle}")
 

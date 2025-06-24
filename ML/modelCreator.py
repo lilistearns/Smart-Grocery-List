@@ -3,6 +3,7 @@ import mysql.connector
 import tensorflow as tf
 import numpy as np
 import pandas as pd
+import json
 import os
 import sys
 
@@ -35,30 +36,34 @@ def dbQuery():
 
     if(connection.is_connected()):
         print("Connection to DB successful")
-        #df = pd.read_sql(f"""
-        #    SELECT store, price, quantity, quality 
-        #    FROM items 
-        #    WHERE uid = %s AND item_name = %s
-        #""", conn, params=(uid, item_name))
-        conn.close()
     else:
         print("Connection to DB unsuccessful")
 
+def dataRetrieval(jsonFile):
+    with open(jsonFile, "r") as f:
+        data = json.load(f)
+
+    X, Y = [], []
+    for entry in data:
+        try:
+            features = [entry["price"], entry["quantity"], entry["quality"]]
+            X.append(features)
+            Y.append(entry["rating"])
+        except KeyError as e:
+            print(f"Missing key in entry: {e}")
+
+    return np.array(X), np.array(Y)
 
 def modelMaker(uid):
-    
-    # v will be webscraped later
-    sdata = {
-        "price": [2.99, 2.49, 3.49, 3.29],
-        "quantity": [1.0, 1.5, 1.0, 1.2],
-        "quality": [0.8, 0.9, 0.85, 0.88],
-        "rating": [0.6, 0.9, 0.5, 0.7]  # ^ simulated user and data
-    }
+    jsonPath = f"../UserJson/SampleData-{uid}.json"
+    if not os.path.exists(jsonPath):
+        print(f"Data file not found: {jsonPath}")
+        return
 
-    X, Y = getTrainingData(sdata)
+    X, Y = dataRetrieval(jsonPath)
     modelPath = f"models/model-{uid}.h5"
 
-    # If model exists, load and continue training
+    # If model exists, load and update it
     if os.path.exists(modelPath):
         print(f"Updating existing model for UID {uid}")
         model = tf.keras.models.load_model(modelPath)
