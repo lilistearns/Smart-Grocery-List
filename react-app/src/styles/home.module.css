@@ -16,14 +16,15 @@ nav {
             padding: 10px;
         }
 
-.user {
-    flex-shrink: 1;
-    flex-basis: 0;
-}
 
 .header_title {
     text-align: center;
     flex-basis: 300px;
+}
+
+.user {
+    padding-left: 10px;
+    padding-top: 10px;
 }
 
 button {

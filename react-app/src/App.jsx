@@ -1,8 +1,9 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { Home } from './pages/home'
-import { Test } from './pages/test'
 import { Login } from './pages/login'
 import { SignUp } from './pages/signup'
+import { Preferences } from './pages/preferences'
+import { Update } from './pages/update'
 
 function App() {
 
@@ -10,9 +11,10 @@ function App() {
         <Router>
             <Routes>
                 <Route exact path="/" element={<Home/>}/>
-                <Route path="/test" element={<Test/>}/>
                 <Route path="/login" element={<Login/>}/>
                 <Route path="/signup" element={<SignUp/>}/>
+                <Route path="/preferences" element={<Preferences/>}/>
+                <Route path="/update" element={<Update/>}/>
             </Routes>
         </Router>
     );

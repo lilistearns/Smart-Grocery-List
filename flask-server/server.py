@@ -4,10 +4,10 @@ from cachelib.file import FileSystemCache # session backend
 from flask_bcrypt import Bcrypt # password hashing
 from flask_cors import CORS
 import sys
-sys.path.append("./Data")
+sys.path.append("../Data")
+sys.path.append("../ML")
 import userFunctions
 import item
-
 
 
 # Initializations
@@ -26,21 +26,6 @@ bcrypt = Bcrypt(app)
 CORS(app, supports_credentials = True)
 
 
-""" @app.route("/test", methods=["GET"])
-def get():
-   return "Fetching Message..."
-
-
-@app.route("/test", methods=["POST"])
-def post():
-    message = request.json.get("sendMessage")
-
-    if not message:
-        return jsonify({"message": "Please input some text"}), 400
-    else:
-        return jsonify({"message": message}) """
-
-
 @app.route("/", methods=["GET"])
 def getHome():
     email = session.get("email")
@@ -57,7 +42,7 @@ def getHome():
 def create_user():
     name = request.json.get("sendName")
     email = request.json.get("sendEmail")
-    username = request.jason.get("sendUsername")
+    username = request.json.get("sendUsername")
     password = request.json.get("sendPassword")
     password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
 
@@ -66,6 +51,7 @@ def create_user():
     else:
         session["email"] = email
         userFunctions.addUserInfo(name, username, password_hash, email)
+        return jsonify({"message": "Sign-up Successful"})
 
 
 @app.route("/insertPreferences", methods=["POST"])
@@ -79,6 +65,7 @@ def insertPreferences():
     uid = userFunctions.getUID(email)
 
     userFunctions.insertPreferences(uid, qual, price, quant,size, diet)
+    return jsonify({"message": "Preference Creation Successful"})
 
 
 @app.route("/login", methods=["POST"])
@@ -116,6 +103,7 @@ def updateStores():
     email = session.get("email")
     uid = userFunctions.getUID(email)
     userFunctions.updateStores(uid,[storeID1,storeID2,storeID3,storeID4,storeID5])
+    return jsonify({"message": "Update Successful"})
 
 @app.route("/updatePreferences", methods=["POST"])
 def updatePreferences():
@@ -126,6 +114,7 @@ def updatePreferences():
     email = session.get("email")
     uid = userFunctions.getUID(email)
     userFunctions.updatePreferences(uid, qual, price, quant)
+    return jsonify({"message": "Update Successful"})
 
 @app.route("/updateDiet", methods=["POST"])
 def updateDiet():
@@ -133,6 +122,7 @@ def updateDiet():
     email = session.get("email")
     uid = userFunctions.getUID(email)
     userFunctions.updateDiet(uid, diet)
+    return jsonify({"message": "Update Successful"})
 
 
 @app.route("/updateShoppingSize", methods=["POST"])
@@ -141,6 +131,7 @@ def updateShoppingSize():
     email = session.get("email")
     uid = userFunctions.getUID(email)
     userFunctions.updateShoppingSize(uid, size)
+    return jsonify({"message": "Update Successful"})
 
 @app.route("/findItem", methods=["POST"])
 def findItem():

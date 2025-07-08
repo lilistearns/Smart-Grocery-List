@@ -3,14 +3,16 @@ import React, { useState, useEffect } from 'react'
 
 export function SignUp() {
 
+    const [sendName, setSendName] = useState("")
     const [sendEmail, setSendEmail] = useState("")
+    const [sendUsername, setSendUsername] = useState("")
     const [sendPassword, setSendPassword] = useState("")
 
     const onSubmit = async (e) => {
         //Prevents auto. page reloading
         e.preventDefault()
 
-        const data = {sendEmail, sendPassword}
+        const data = {sendName, sendEmail, sendUsername, sendPassword}
         const url = "http://127.0.0.1:5000/signup"
 
         const options = {
@@ -31,7 +33,7 @@ export function SignUp() {
         }
         else{
             console.log("Account Sent: " + JSON.stringify(data))
-            window.location.href = "/"
+            window.location.href = "/preferences"
         }
     }
 
@@ -43,8 +45,16 @@ export function SignUp() {
 
             <form onSubmit={onSubmit}>
                 <label>
+                    Name:
+                    <input type="text" name="sendName" value={sendName} onChange={(e) => setSendName(e.target.value)}></input>
+                </label>
+                <label>
                     Email:
                     <input type="email" name="sendEmail" value={sendEmail} onChange={(e) => setSendEmail(e.target.value)}></input>
+                </label>
+                <label>
+                    Username:
+                    <input type="text" name="sendUsername" value={sendUsername} onChange={(e) => setSendUsername(e.target.value)}></input>
                 </label>
                 <label>
                     Password:
