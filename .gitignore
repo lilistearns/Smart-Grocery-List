@@ -10,6 +10,7 @@ coverage/
 
 # production
 build/
+UserData/
 
 # misc
 .DS_Store
@@ -25,3 +26,5 @@ yarn-error.log*
 # flask & python
 flask_session/
 __pycache__/
+ML/item_obselete.py
+ML/list_obselete.py

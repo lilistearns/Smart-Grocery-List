@@ -6,6 +6,8 @@ from flask_cors import CORS
 import sys
 sys.path.append("./Data")
 import userFunctions
+import item
+
 
 
 # Initializations
@@ -139,6 +141,22 @@ def updateShoppingSize():
     email = session.get("email")
     uid = userFunctions.getUID(email)
     userFunctions.updateShoppingSize(uid, size)
+
+@app.route("/findItem", methods=["POST"])
+def findItem():
+    inputItem = request.json.get("item")
+    email = session.get("email")
+    uid = userFunctions.getUID(email)
+    return item.itemRecommender(inputItem,uid)
+    #OUTPUT: [('Walmart', 8.14, 'https://www.walmart.com/ip/Vital-Farms-Pasture-Raised-Grade-A-Large-Brown-Eggs-12-Count/115864065?classType=REGULAR&athbdg=L1600'), ('Walmart', 11.86, 'https://www.walmart.com/ip/Happy-Egg-Co-Organic-Free-Range-Large-Brown-Eggs-18-Count/410073921?classType=REGULAR&athbdg=L1300'), ('Walmart', 7.94, 'https://www.walmart.com/ip/Happy-Egg-Co-Organic-Free-Range-Large-Brown-Eggs-12-Count-Dozen/134714692?classType=REGULAR&athbdg=L1300')]
+    #[(Store,price,URL)]
+
+@app.route("/findList", methods=["POST"])
+def findList():
+    inputList = request.json.get("itemList")
+    email = session.get("email")
+    uid = userFunctions.getUID(email)
+    return item.listRecommender(inputList, uid)
 
 if __name__ == '__main__':
     app.run(debug=True)
