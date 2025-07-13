@@ -1,0 +1,12 @@
+.radio {
+
+}
+
+.radio input {
+    appearance: none;
+}
+
+.radio label {
+    font-size: 25px;
+    color: red
+}
