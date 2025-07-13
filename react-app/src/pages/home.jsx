@@ -27,6 +27,101 @@ export function Home() {
         window.location.reload()
     }
 
+
+    /* Recommenders */
+
+    const [item, setItem] = useState("")
+    const [foundItem, setFoundItem] = useState([])
+
+    const [itemList, setItemList] = useState([])
+    const [foundList, setFoundList] = useState([])
+
+    const onSubmitItem = async (e) => {
+        //Prevents auto. page reloading
+        e.preventDefault()
+
+        const data = {item}
+        const url = "http://127.0.0.1:5000/findItem"
+
+        const options = {
+            credentials: "include",
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        }
+
+        //Communication
+        const response = await fetch(url, options)
+
+        console.log("Data: " + JSON.stringify(data))
+
+        if(response.status !== 201 && response.status !== 200){
+            const data = await response.json()
+            alert(data.message)
+        }
+        else{
+            const data = await response.json()
+            //console.log("Result: " + JSON.stringify(data))
+            setFoundItem(data)
+            
+        }
+    }
+
+    const onSubmitList = async (e) => {
+        //Prevents auto. page reloading
+        e.preventDefault()
+
+        const data = {itemList}
+        const url = "http://127.0.0.1:5000/findList"
+
+        const options = {
+            credentials: "include",
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        }
+
+        //Communication
+        const response = await fetch(url, options)
+
+        console.log("Data: " + JSON.stringify(data))
+
+        if(response.status !== 201 && response.status !== 200){
+            const data = await response.json()
+            alert(data.message)
+        }
+        else{
+            const data = await response.json()
+            //console.log("Result: " + JSON.stringify(data))
+            setFoundList(data)
+        }
+    }
+
+    const itemGroup = foundItem.map(option => {
+        return (<li className={classes.ml_output} key={option[2] /* Key is URL */}> 
+                    <p className={classes.ml_option}>Store: {option[0]}</p>
+                    <p className={classes.ml_option}>Price: {option[1]}</p>
+                    <p className={classes.ml_option}>URL: <a href={option[2]}>Link</a></p>
+                    <p className={classes.ml_option}>Product Name: {option[3]}</p>
+                    <p className={classes.ml_option}>Quantity: {option[4]}</p>
+                </li>)
+    });
+
+    const listGroup = foundList.map(option => {
+        return (<li className={classes.ml_output} key={option[2] /* Key is URL */}>
+                    <p className={classes.ml_option}>Store: {option[0]}</p>
+                    <p className={classes.ml_option}>Price: {option[1]}</p>
+                    <p className={classes.ml_option}>URL: <a href={option[2]}>Link</a></p>
+                    <p className={classes.ml_option}>Product Name: {option[3]}</p>
+                    <p className={classes.ml_option}>Quantity: {option[4]}</p>
+                </li>)
+    });
+
+
     function navigateUpdate(){
         window.location.href = "/update"
     }
@@ -46,6 +141,45 @@ export function Home() {
                 <h3 className={classes.user}>Welcome {email.email}!</h3>
 
 
+                {/* Item Search */}
+
+                <h4 className={classes.ml_instructions}>This feature is for a single grocery item. You will recieve three different options. <br></br>Please enter your item.</h4>
+
+                <form onSubmit={onSubmitItem}>
+                    <label>
+                        Item Search:
+                        <input className={classes.ml_inputbox} type="text" name="item" value={item} onChange={(e) => setItem(e.target.value)}></input>
+                    </label>
+                <button type="submit">Submit</button>  
+                </form>
+
+                {foundItem.length != 0 &&
+                <ul>
+                    {itemGroup}
+                </ul>
+                }
+
+
+                <hr />
+
+                
+                {/* List Search */}
+
+                <h4 className={classes.ml_instructions}>This feature is for muliple grocery items.  You will recieve one option for each grocery item. <br></br>Please enter your items separated with a comma.</h4>
+
+                <form onSubmit={onSubmitList}>
+                    <label>
+                        List Search:
+                        <input className={classes.ml_inputbox} type="text" name="itemList" value={itemList} onChange={(e) =>{var temp = e.target.value.split(','); setItemList(temp.map(list => list.trim()))}}></input>
+                    </label>
+                <button type="submit">Submit</button>  
+                </form>
+
+                {foundList.length != 0 &&
+                <ul>
+                    {listGroup}
+                </ul>
+                }
 
             </div>
         );
