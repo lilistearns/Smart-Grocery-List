@@ -6,6 +6,7 @@ from flask_cors import CORS
 import sys
 sys.path.append("./Data")
 import userFunctions
+sys.path.append("./ML")
 import item
 
 
@@ -19,7 +20,7 @@ app.config["SESSION_TYPE"] = "cachelib"
 app.config['SESSION_CACHELIB'] = FileSystemCache(cache_dir='flask_session', threshold=500)
 app.config["SESSION_USE_SIGNER"] = True
 app.config["SESSION_COOKIE_SECURE"] = True
-app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+app.config["SESSION_COOKIE_SAMESITE"] = "None"
 
 Session(app)
 bcrypt = Bcrypt(app)
@@ -57,15 +58,18 @@ def getHome():
 def create_user():
     name = request.json.get("sendName")
     email = request.json.get("sendEmail")
-    username = request.jason.get("sendUsername")
+    username = request.json.get("sendUsername")
     password = request.json.get("sendPassword")
     password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
 
-    if not (email and password):
-        return jsonify({"message": "Please input an email and a password"}), 400
+    if not (email and password and name and username):
+
+        return jsonify({"message": "Please Fill all fields"}), 400
     else:
+
         session["email"] = email
         userFunctions.addUserInfo(name, username, password_hash, email)
+        return jsonify({"message": "Successfully created account!"}), 200
 
 
 @app.route("/insertPreferences", methods=["POST"])
@@ -148,8 +152,8 @@ def findItem():
     email = session.get("email")
     uid = userFunctions.getUID(email)
     return item.itemRecommender(inputItem,uid)
-    #OUTPUT: [('Walmart', 8.14, 'https://www.walmart.com/ip/Vital-Farms-Pasture-Raised-Grade-A-Large-Brown-Eggs-12-Count/115864065?classType=REGULAR&athbdg=L1600'), ('Walmart', 11.86, 'https://www.walmart.com/ip/Happy-Egg-Co-Organic-Free-Range-Large-Brown-Eggs-18-Count/410073921?classType=REGULAR&athbdg=L1300'), ('Walmart', 7.94, 'https://www.walmart.com/ip/Happy-Egg-Co-Organic-Free-Range-Large-Brown-Eggs-12-Count-Dozen/134714692?classType=REGULAR&athbdg=L1300')]
-    #[(Store,price,URL)]
+    #OUTPUT: [('Hannaford', 1.49, 'https://www.hannaford.com/product/hannaford-whole-milk/932359?hdrKeyword=Milk', 'Hannaford Whole Milk', 'Quart'), ('Walmart', 1.88, 'https://www.walmart.com/ip/Great-Value-Milk-2-Reduced-Fat-Half-Gallon-64-fl-oz-Jug/10450119?classType=REGULAR&athbdg=L1600', 'Great Value Milk, 2% Reduced Fat, Half Gallon, 64 fl oz Jug', '1 each'), ('Walmart', 1.94, 'https://www.walmart.com/ip/Great-Value-Milk-Whole-Vitamin-D-Half-Gallon-Plastic-Jug-64oz/10450118?classType=REGULAR&athbdg=L1600', 'Great Value Milk Whole Vitamin D, Half Gallon, Plastic, Jug, 64oz', '64 oz')]
+    #[(Store,price,URL,Product Name,quantity)]
 
 @app.route("/findList", methods=["POST"])
 def findList():
@@ -157,6 +161,7 @@ def findList():
     email = session.get("email")
     uid = userFunctions.getUID(email)
     return item.listRecommender(inputList, uid)
-
+    #OUTPUT: [('Hannaford', 2.59, 'https://www.hannaford.com/product/hannaford-whole-milk/932363?hdrKeyword=Milk', 'Hannaford Whole Milk', 'Gallon'), ('Hannaford', 4.19, 'https://www.hannaford.com/product/nature-s-promise-free-range-large-brown-eggs/988051?hdrKeyword=Brown+Eggs', "Nature's Promise Free Range Large Brown Eggs", '12 Ct')]
+    #[(Store,price,URL,Product Name,quantity),(Store,price,URL,Product Name,quantity),(Store,price,URL,Product Name,quantity),...,]
 if __name__ == '__main__':
     app.run(debug=True)

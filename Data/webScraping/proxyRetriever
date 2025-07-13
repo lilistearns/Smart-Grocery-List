@@ -1,0 +1,254 @@
+import json
+import pandas as pd
+import re
+import requests
+from bs4 import BeautifulSoup
+import json
+from requests.cookies import cookiejar_from_dict
+from typing import Dict
+import time
+import random
+import urllib.parse
+from http.cookies import SimpleCookie
+
+
+
+
+def initializeAdobeSession(session: requests.Session, session_id=None, proxy: str = None):
+    import uuid
+    import time
+
+    print("Initializing Adobe Target session (accurate)...")
+
+    if not session_id:
+        session_id = uuid.uuid4().hex[:32]
+
+    edge_url = f"https://safewayinc.tt.omtrdc.net/rest/v1/delivery"
+    params = {
+        "client": "safewayinc",
+        "sessionId": session_id,
+        "version": "2.11.3"
+    }
+
+    headers = {
+        "Content-Type": "text/plain", 
+        "Origin": "https://www.starmarket.com",
+        "Referer": "https://www.starmarket.com/",
+        "User-Agent": session.headers.get("User-Agent", "Mozilla/5.0"),
+        "Accept": "*/*",
+        "Accept-Encoding": "gzip, deflate, br, zstd",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Sec-Fetch-Dest": "empty",
+        "Sec-Fetch-Mode": "cors",
+        "Sec-Fetch-Site": "cross-site",
+        "Sec-Fetch-Storage-Access": "active",
+        "sec-ch-ua": '"Not)A;Brand";v="8", "Chromium";v="138", "Google Chrome";v="138"',
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": '"Windows"',
+    }
+
+    payload = {
+        "id": {
+            "marketingCloudVisitorId": str(uuid.uuid4().int)[:38]
+        },
+        "context": {
+            "channel": "web",
+            "browser": {
+                "host": "www.starmarket.com"
+            },
+            "address": {
+                "url": "https://www.starmarket.com/shop/search-results.html?q=eggs"
+            }
+        },
+        "experienceCloud": {
+            "analytics": {
+                "logging": "client_side"
+            }
+        },
+        "execute": {
+            "pageLoad": {}
+        }
+    }
+
+    try:
+        proxies = {"http": f"http://{proxy}", "https": f"http://{proxy}"} if proxy else None
+        resp = session.post(edge_url, headers=headers, params=params, json=payload, proxies=proxies, timeout=15)
+
+        if resp.status_code != 200:
+            print(f"Adobe Target init failed: {resp.status_code}")
+            print(resp.text)
+            return False
+
+        data = resp.json()
+
+        tnt_id = data.get("id", {}).get("tntId")
+        mc_id = data.get("id", {}).get("marketingCloudVisitorId")
+
+        if not tnt_id or not mc_id:
+            print("Failed to extract tntId or marketingCloudVisitorId")
+            return False
+
+        session.cookies.set("mbox", f"PC#{tnt_id}#1815496332|session#{session_id}#1752253392", domain=".starmarket.com")
+        session.cookies.set("AMCVS_A7BF3BC75245ADF20A490D4D@AdobeOrg", "1", domain=".starmarket.com")
+        session.cookies.set("AMCV_A7BF3BC75245ADF20A490D4D@AdobeOrg",
+                            f"179643557|MCIDTS|20281|MCMID|{mc_id}|MCAAMLH-1752854068|7|MCAAMB-1752854068|6G1yn...|MCOPTOUT-1752256468s|NONE|vVersion|5.5.0",
+                            domain=".starmarket.com")
+
+        print("Adobe session initialized and cookies set.")
+        return True
+
+    except Exception as e:
+        print(f"Adobe session exception: {e}")
+        return False
+    
+
+def cookieGetter(storeURL,proxy):
+    print("Made It Here")
+    url = "http://localhost:8191/v1"
+    headers = {"Content-Type": "application/json"}
+    data = {
+        "cmd": "request.get",
+        "url": storeURL,
+        "maxTimeout": 60000,
+        "returnOnlyCookies": True,
+        "proxy" : proxy
+    }
+    response = requests.post(url, headers=headers, json=data)
+    print(response.status_code)
+    return response.json()["solution"]["cookies"]
+
+def loadCookies(session: requests.Session, cookiesDict: Dict):
+    cookie = {}
+    for elem in cookiesDict:
+        cookie[elem["name"]] = elem["value"]
+    session.cookies = cookiejar_from_dict(cookie)
+    return session
+
+
+def parse_cookie_string(cookie_str):
+    cookie = SimpleCookie()
+    cookie.load(cookie_str)
+    return [{"name": key, "value": morsel.value} for key, morsel in cookie.items()]
+
+
+
+itemName = "eggs"
+session = requests.Session()
+proxy = "154.213.161.101:3129"
+sproxy = "http://" + proxy
+session.proxies = {
+"http": sproxy,
+"https": sproxy,
+}
+cookies = cookieGetter(f"https://www.starmarket.com/shop/search-results.html?q={itemName}&tab=products", proxy)
+rep = session.get("https://httpbin.org/ip")
+print(rep.text)
+loadCookies(session, cookies)
+
+response = session.get(
+    f"https://www.starmarket.com/shop/search-results.html?q={itemName}&tab=products",
+    timeout=15
+)
+
+match = re.search(r'"apimProgramSubscriptionKey"\s*:\s*"([a-f0-9]{32})"', response.text)
+subscriptionKey = match.group(1)
+with open("starmarket2.html", "w", encoding="utf-8") as f:
+            f.write(response.text)
+
+print(subscriptionKey)
+    
+session.proxies = {
+    "http": sproxy,
+    "https": sproxy,
+}
+newCookies = '''visid_incap_2083761=t+6Z3GpyR12zN3piONio//SWbmgAAAAAQUIPAAAAAAD7RpN/iGCQwcKJt2L1vA+j; absVisitorId=2efdbc64-e6f8-4623-9fde-349bb9177ca4; OptanonAlertBoxClosed=2025-07-09T16:21:15.596Z; __pdst=3d59c525fab64cefabf2888f2a0380eb; _gcl_au=1.1.1570621196.1752078077; ...''' 
+parsed_cookies = parse_cookie_string(newCookies)
+loadCookies(session, parsed_cookies)
+initializeAdobeSession(session, proxy=proxy)
+
+
+print(f"Subscription Key: {subscriptionKey}")
+    
+storeID = "2576"
+requestID = str(random.randint(10**18, 10**19 - 1))
+visitorID = "2efdbc64-e6f8-4623-9fde-349bb9177ca4"
+
+params = {
+    "request-id": requestID, 
+    "url": "https://www.starmarket.com",
+    "pageurl": "https://www.starmarket.com",
+    "pagename": "search",
+    "rows": 30,
+    "start": 0,
+    "search-type": "keyword",
+    "storeid": storeID,
+    "featured": "true",
+    "q": itemName,
+    "sort": "",
+    "dvid": "web-4.1search",
+    "channel": "instore",
+    "visitorId": visitorID,
+    "pgm": "intg-search,merch-banner",
+    "banner": "starmarket"
+}
+
+# Updated headers to match the working request (removed HTTP/2 pseudo-headers)
+apiHeaders = {
+    "accept": "application/json, text/plain, */*",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "en-US,en;q=0.9",
+    "ocp-apim-subscription-key": subscriptionKey,
+    "referer": f"https://www.starmarket.com/shop/search-results.html?q={urllib.parse.quote(itemName)}&tab=products",
+    "sec-ch-ua": '"Not)A;Brand";v="8", "Chromium";v="138", "Google Chrome";v="138"',
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": '"Windows"',
+    "sec-fetch-dest": "empty",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-site": "same-origin",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+}
+
+search_api_url = "https://www.starmarket.com/abs/pub/xapi/pgmsearch/v1/search/products"
+
+# Add retry logic and better error handling
+max_retries = 3
+for attempt in range(max_retries):
+    try:
+        print(f"Attempt {attempt + 1}/{max_retries}")
+        product_response = session.get(
+            search_api_url, 
+            headers=apiHeaders, 
+            params=params, 
+            timeout=30  # Increased timeout
+        )
+        
+        if product_response.ok:
+            products_json = product_response.json()
+            print(json.dumps(products_json, indent=2))
+            break
+        else:
+            print(f"Request failed: {product_response.status_code}")
+            print(f"Response headers: {product_response.headers}")
+            print(f"Response text: {product_response.text[:500]}...")
+            
+    except requests.exceptions.Timeout:
+        print(f"Timeout error on attempt {attempt + 1}")
+        if attempt < max_retries - 1:
+            print("Retrying in 5 seconds...")
+            time.sleep(5)
+        else:
+            print("Max retries reached. API call failed.")
+            
+    except requests.exceptions.RequestException as e:
+        print(f"Request error: {e}")
+        if attempt < max_retries - 1:
+            print("Retrying in 5 seconds...")
+            time.sleep(5)
+        else:
+            print("Max retries reached. API call failed.")
+            
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+        break
+
+

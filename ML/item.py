@@ -1,14 +1,28 @@
+import os
+import warnings
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # 0=all, 1=info, 2=warning, 3=error only
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'  # Disable oneDNN optimizations warnings
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+
+warnings.filterwarnings('ignore')
+warnings.filterwarnings('ignore', category=DeprecationWarning)
 from sklearn.preprocessing import MinMaxScaler
 import tensorflow as tf
+tf.get_logger().setLevel('ERROR')
+tf.autograph.set_verbosity(0)
+import absl.logging
+absl.logging.set_verbosity(absl.logging.ERROR)
 import numpy as np
 import pandas as pd
 from keras.models import load_model
 import mysql.connector
 import sys
+import re
+import json
 sys.path.append("./Data/webScraping")
 import webscraper
 tf.config.run_functions_eagerly(True)
-
 
 def normalizer(data):
     data = data.copy()
@@ -19,6 +33,75 @@ def normalizer(data):
     )
     return data
 
+def quantityNormalizer(data):
+    data = str(data)
+    match = re.search(r'(\d+(?:\.\d+)?)\s*(.+)', data)
+    if not match:
+        number = 1.0
+        unit = data
+    else:
+        number = float(match.group(1))
+        unit = match.group(2).strip().lower()
+
+    
+    if unit in ['gallon', 'gal', 'Gallon', 'Gal']:
+        normalizedQuantity = number * 128
+    elif unit in ['half gallon', 'half gal', 'Half Gallon', 'Half Gal']:
+        normalizedQuantity = number * 64
+    elif unit in ['quart', 'qt']:
+        normalizedQuantity = number * 32
+    elif unit in ['pint', 'pt']:
+        normalizedQuantity = number * 16
+    elif unit in ['liter', 'l']:
+        normalizedQuantity = number * 33.814
+    elif unit in ['ml', 'milliliter']:
+        normalizedQuantity = number * 0.033814
+    elif unit in ['fl oz', 'oz'] and 'fl' in data.lower():
+        normalizedQuantity = number
+    elif unit in ['lb', 'lbs', 'pound', 'pounds']:
+        normalizedQuantity = number * 16
+    elif unit in ['kg', 'kilogram', 'kilograms']:
+        normalizedQuantity = number * 35.274
+    elif unit in ['g', 'gram', 'grams']:
+        normalizedQuantity = number * 0.035274
+    elif unit in ['oz', 'ounce', 'ounces'] and 'fl' not in data.lower():
+        normalizedQuantity = number
+    elif unit in ['count', 'ct', 'pieces', 'pcs', 'each', 'ea', 'items', 'item']:
+        normalizedQuantity = number
+    elif unit in ['dozen', 'doz']:
+        normalizedQuantity = number * 12
+    elif unit in ['pair', 'pairs']:
+        normalizedQuantity = number * 2
+
+    elif unit in ['pack', 'pk', 'package', 'packages', 'box', 'boxes', 'bag', 'bags']:
+        normalizedQuantity = number
+    else:
+        normalizedQuantity = number
+    
+    return float(normalizedQuantity)
+
+
+def saveListRecommendation(list, uid):
+    directory = f"./UserData/{uid}/"
+    existing = [
+        f for f in os.listdir(directory)
+        if f.startswith(f"{uid}-list-") and f.endswith(".json")
+    ]
+    numbers = []
+    for f in existing:
+        try:
+            num = int(f.split("-list-")[1].split(".json")[0])
+            numbers.append(num)
+        except ValueError:
+            continue
+    nextNum = max(numbers, default=0) + 1
+    filename = f"{uid}-list-{nextNum}.json"
+    filepath = os.path.join(directory, filename)
+
+    with open(filepath, "w", encoding="utf-8") as f:
+        json.dump(list, f, indent=2)
+
+    print(f"Saved list to {filepath}")
 
 def dbQuery():
     connection = mysql.connector.connect(
@@ -75,7 +158,6 @@ def userQuery(uid):
         cursor.execute(storeQuery, tuple(stores))
         storeInfo = cursor.fetchall()
         connection.close()
-    
         return {
             "qualPercent": row[0],
             "pricePercent": row[1],
@@ -98,51 +180,36 @@ def recommender(data, model, pricePercent, qualityPercent, quantityPercent):
     expected_input_shape = model.input_shape[-1]
 
     if expected_input_shape == 6:
-        input["pricePercent"] = pricePercent / 100
-        input["qualPercent"] = qualityPercent / 100
-        input["quantPercent"] = quantityPercent / 100
+        input["pricePercent"] = pricePercent 
+        input["qualPercent"] = qualityPercent 
+        input["quantPercent"] = quantityPercent 
 
     data["score"] = model.predict(input)
-    return data.sort_values("score", ascending=False).head(3)
+    return data.sort_values("score", ascending=False)
 
-def bestList(itemList, uid):
-    model_path = f"UserData/{uid}/model-{uid}.h5"
-    model = load_model(model_path)
-    prefs, listOfStores = userQuery(uid)
-
-    dfs = []
-    for store in listOfStores:
-        func = getattr(webscraper, store[0], None)
-        if callable(func):
-            storeDF = func(itemList,5)
-            if isinstance(storeDF, pd.DataFrame):
-                dfs.append(storeDF)
-
-    if not dfs:
-        return pd.DataFrame()  
-
-    data = pd.concat(dfs, ignore_index=True)
-
+def bestList(data, model, pricePercent, qualityPercent, quantityPercent, original_item_list):
     scored_data = recommender(
         data,
         model,
-        pricePercent=prefs["pricePercent"],
-        qualityPercent=prefs["qualPercent"],
-        quantityPercent=prefs["quantPercent"]
+        pricePercent,
+        qualityPercent,
+        quantityPercent
     )
-
-    stores = scored_data["store"].unique()
-    items = scored_data["item"].unique()
     baskets = []
+    stores = scored_data["store"].unique()
 
     for store in stores:
         store_items = scored_data[scored_data["store"] == store]
         basket = []
-        for item in items:
-            match = store_items[store_items["item"] == item]
+
+        for item_name in original_item_list:
+            match = store_items[
+                store_items["item"].str.lower() == item_name.lower()
+            ]
             if not match.empty:
                 basket.append(match.iloc[0])
-        if len(basket) == len(items):
+
+        if len(basket) == len(original_item_list):
             basket_df = pd.DataFrame(basket)
             avg_score = basket_df["score"].mean()
             baskets.append((avg_score, basket_df))
@@ -159,11 +226,12 @@ def itemRecommender(item,uid):
         func = getattr(webscraper, store[0], None)
         storeDF = func(item,10)
         dfs.append(storeDF)
-    data = pd.concat(dfs,ignore_index=True)
-    #data["z_qty"] = zscore(data["quantity"])
-    #data = data[data["z_qty"].abs() <= 2.5]
-    #data.drop(columns=["z_qty"], inplace=True)
+    
+    originalData = pd.concat(dfs,ignore_index=True)
+    data = originalData.copy()
+    data['quantity'] = data['quantity'].apply(quantityNormalizer)
     print(data)
+    
     recommendations = recommender(
         data,
         model,
@@ -171,23 +239,68 @@ def itemRecommender(item,uid):
         prefs["qualPercent"],
         prefs["quantPercent"],
     )
+    
+    predicted = recommendations.head(3).index
+    
     itemsR = list(
-        recommendations[["store", "price", "URL"]]
-        .head(3)
+        originalData.loc[predicted, ["store", "price", "URL","productName","quantity"]]
         .itertuples(index=False, name=None)
     )
-
+    
     return itemsR
 
 def listRecommender(itemList, uid):
-    recommendations = bestList(itemList, uid)
+    model_path = f"UserData/{uid}/model-{uid}.h5"
+    model = load_model(model_path)
+    prefs, listOfStores = userQuery(uid)
+
+    dfs = []
+    for store in listOfStores:
+        func = getattr(webscraper, store[0], None)
+        if callable(func):
+            storeDF = func(itemList, 5)
+            if isinstance(storeDF, pd.DataFrame):
+                dfs.append(storeDF)
+
+    if not dfs:
+        return []
+
+    originalData = pd.concat(dfs, ignore_index=True)
+    data = originalData.copy()
+    data['quantity'] = data['quantity'].apply(quantityNormalizer)
+
+    recommendations = bestList(
+        data,
+        model,
+        prefs["pricePercent"],
+        prefs["qualPercent"],
+        prefs["quantPercent"],
+        itemList
+    )
+
+    if recommendations.empty:
+        return []
+    required_columns = {"store", "item"}
+    if not required_columns.issubset(recommendations.columns) or not required_columns.issubset(originalData.columns):
+        raise ValueError("Required columns 'store' and 'item' not found in recommendations or original data")
+
+    merged = (
+        pd.merge(
+            recommendations[["store", "item"]],
+            originalData,
+            on=["store", "item"],
+            how="left"
+        )
+        .drop_duplicates(subset=["item"])
+    )
+
     listR = list(
-        recommendations[["store", "price", "URL"]]
+        merged[["store", "price", "URL", "productName", "quantity"]]
         .itertuples(index=False, name=None)
     )
 
     return listR
-    
 
-
-print(listRecommender("Milk",3))
+#listItem = listRecommender(("Milk","Brown Eggs"),3)
+#print(listItem)
+#saveListRecommendation(listItem,3)

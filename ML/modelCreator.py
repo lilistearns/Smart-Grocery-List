@@ -73,9 +73,11 @@ def modelMaker(uid):
         print(f"Creating new model for UID {uid}")
         model = tf.keras.Sequential([
             tf.keras.layers.Input(shape=(3,)),
-            tf.keras.layers.Dense(8, activation="relu"),
+            tf.keras.layers.Dense(32, activation="relu"),
+            tf.keras.layers.Dense(16, activation="relu"),
             tf.keras.layers.Dense(1, activation="sigmoid")
         ])
+
         model.compile(optimizer='adam', loss=tf.keras.losses.MeanSquaredError())
         model.fit(X, Y, epochs=100, verbose=1)
 
