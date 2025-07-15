@@ -23,7 +23,7 @@ export function Home() {
             method: "POST",
         }
 
-        const response = await fetch("http://127.0.0.1:5000/logout", options)
+        await fetch("http://127.0.0.1:5000/logout", options)
         window.location.reload()
     }
 
@@ -153,7 +153,7 @@ export function Home() {
                 <button type="submit">Submit</button>  
                 </form>
 
-                {foundItem.length != 0 &&
+                {foundItem.length !== 0 &&
                 <ul>
                     {itemGroup}
                 </ul>
@@ -175,7 +175,7 @@ export function Home() {
                 <button type="submit">Submit</button>  
                 </form>
 
-                {foundList.length != 0 &&
+                {foundList.length !== 0 &&
                 <ul>
                     {listGroup}
                 </ul>

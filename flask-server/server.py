@@ -3,11 +3,14 @@ from flask_session import Session # server-side sessions
 from cachelib.file import FileSystemCache # session backend
 from flask_bcrypt import Bcrypt # password hashing
 from flask_cors import CORS
+from threading import Thread
+
 import sys
 sys.path.append("./Data")
 import userFunctions
 sys.path.append("./ML")
 import item
+import modelCreator
 
 
 # Initializations
@@ -56,20 +59,22 @@ def create_user():
         return jsonify({"message": "Sign-up Successful"})
 
 
+from threading import Thread
+
 @app.route("/insertPreferences", methods=["POST"])
 def insertPreferences():
     qual = request.json.get("qual")
-    price = request.json.get("quant")
-    quant = request.json.get("price")
+    price = request.json.get("price") 
+    quant = request.json.get("quant") 
     size = request.json.get("size")
     diet = request.json.get("diet")
-    print("Made it here")
-    email = session.get("email")
-    print(email)
-    uid = userFunctions.getUID(email)
-    print(uid)
 
-    userFunctions.insertPreferences(uid, qual, price, quant,size, diet)
+    email = session.get("email")
+    uid = userFunctions.getUID(email)
+
+    userFunctions.insertPreferences(uid, qual, price, quant, size, diet)
+    Thread(target=modelCreator.modelMaker, args=(uid,)).start()
+
     return jsonify({"message": "Preference Creation Successful"})
 
 
@@ -104,10 +109,29 @@ def updateStores():
     storeID3 = request.json.get("storeID3")
     storeID4 = request.json.get("storeID4")
     storeID5 = request.json.get("storeID5")
+    stores = [storeID1,storeID2,storeID3,storeID4,storeID5]
 
     email = session.get("email")
     uid = userFunctions.getUID(email)
-    userFunctions.updateStores(uid,[storeID1,storeID2,storeID3,storeID4,storeID5])
+    storeIDS = userFunctions.getStoreIDs(stores)
+    print(storeIDS)
+    userFunctions.updateStores(uid,storeIDS)
+    return jsonify({"message": "Update Successful"})
+
+@app.route("/insertStores", methods=["POST"])
+def insertStores():
+    storeID1 = request.json.get("storeID1")
+    storeID2 = request.json.get("storeID2")
+    storeID3 = request.json.get("storeID3")
+    storeID4 = request.json.get("storeID4")
+    storeID5 = request.json.get("storeID5")
+    stores = [storeID1,storeID2,storeID3,storeID4,storeID5]
+
+    email = session.get("email")
+    uid = userFunctions.getUID(email)
+    storeIDS = userFunctions.getStoreIDs(stores)
+    print(storeIDS)
+    userFunctions.insertStores(uid,storeIDS)
     return jsonify({"message": "Update Successful"})
 
 @app.route("/updatePreferences", methods=["POST"])

@@ -244,7 +244,7 @@ export function Update() {
                         <label>
                         Diet:
                             <select name="diet" value={diet} onChange={(e) => setDiet(e.target.value)}>
-                                <option value="No Diet">"No Diet"</option>
+                                <option value="No Diet">No Diet</option>
                                 <option value="vegetarian">Vegetarian</option>
                                 <option value="vegan">Vegan</option>
                                 <option value="keto">Keto</option> 
@@ -256,33 +256,63 @@ export function Update() {
                 </div>
                 }
 
-                {settings === "stores" &&
-                <div> 
-                    <form onSubmit={onSubmitStores}>
-                        <label>
-                            Store 1:
-                            <input type="text" name="storeID1" value={storeID1} onChange={(e) => setStoreID1(e.target.value)}></input>
-                        </label>
-                        <label>
-                            Store 2:
-                            <input type="text" name="storeID2" value={storeID2} onChange={(e) => setStoreID2(e.target.value)}></input>
-                        </label>
-                        <label>
-                            Store 3:
-                            <input type="text" name="storeID3" value={storeID3} onChange={(e) => setStoreID3(e.target.value)}></input>
-                        </label>
-                        <label>
-                            Store 4:
-                            <input type="text" name="storeID4" value={storeID4} onChange={(e) => setStoreID4(e.target.value)}></input>
-                        </label>
-                        <label>
-                            Store 5:
-                            <input type="text" name="storeID5" value={storeID5} onChange={(e) => setStoreID5(e.target.value)}></input>
-                        </label>
-                    <button type="submit">Submit</button>  
-                    </form>
-                </div>
-                }
+            {settings === "stores" &&
+            <div> 
+                <form onSubmit={onSubmitStores}>
+                    <label>
+                        Store 1:
+                        <select name="storeID1" value={storeID1} onChange={(e) => setStoreID1(e.target.value)}>
+                            <option value="">Select a store</option>
+                            <option value="starmarket">Star Market</option>
+                            <option value="walmart">Walmart</option>
+                            <option value="shaws">Shaws</option>
+                            <option value="hannaford">Hannaford</option>
+                        </select>
+                    </label>
+                    <label>
+                        Store 2:
+                        <select name="storeID2" value={storeID2} onChange={(e) => setStoreID2(e.target.value)}>
+                            <option value="">Select a store</option>
+                            <option value="starmarket">Star Market</option>
+                            <option value="walmart">Walmart</option>
+                            <option value="shaws">Shaws</option>
+                            <option value="hannaford">Hannaford</option>
+                        </select>
+                    </label>
+                    <label>
+                        Store 3:
+                        <select name="storeID3" value={storeID3} onChange={(e) => setStoreID3(e.target.value)}>
+                            <option value="">Select a store</option>
+                            <option value="starmarket">Star Market</option>
+                            <option value="walmart">Walmart</option>
+                            <option value="shaws">Shaws</option>
+                            <option value="hannaford">Hannaford</option>
+                        </select>
+                    </label>
+                    <label>
+                        Store 4:
+                        <select name="storeID4" value={storeID4} onChange={(e) => setStoreID4(e.target.value)}>
+                            <option value="">Select a store</option>
+                            <option value="starmarket">Star Market</option>
+                            <option value="walmart">Walmart</option>
+                            <option value="shaws">Shaws</option>
+                            <option value="hannaford">Hannaford</option>
+                        </select>
+                    </label>
+                    <label>
+                        Store 5:
+                        <select name="storeID5" value={storeID5} onChange={(e) => setStoreID5(e.target.value)}>
+                            <option value="0">Select a store</option>
+                            <option value="starmarket">Star Market</option>
+                            <option value="walmart">Walmart</option>
+                            <option value="shaws">Shaws</option>
+                            <option value="hannaford">Hannaford</option>
+                        </select>
+                    </label>
+                <button type="submit">Submit</button>  
+                </form>
+            </div>
+            }
 
             </div>
         )

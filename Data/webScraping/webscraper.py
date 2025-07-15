@@ -162,7 +162,7 @@ def starmarket(itemList, num):
         "ocp-apim-subscription-key": "5e790236c84e46338f4290aa1050cdd4",
     }
 
-    token = "3:ZMQfNdiQU6L87zW2hg81pA==:/5hDB+FgGXk3i1QrRco7DAmvkBFaQH0pJ+H5wnCTKMFEYDE+lzkgnSfiytr0jhZoeEN59GaTb+ik1X15zCnmfWEiiUQBPWCOmpEA2sqctjlF3j20g0XdNKbRe15YP9091htEibaEwTg9P/3sLkSE78JiAIJJXqH0qaomMNfNHZl6MJMngrzYoGuhTw7t8YsM7+EdwYpHkMBdNKqi8JapJaIWPVrXnTQrB//BmqDm2Lpfzz7SEdrpFwd+7k6FvxB1QCJgH6m4dHGqQ+SKF/uVMM8m2XIwAwJUUJVE+g3f1OiBzuNqlJaHdy72Z/1EPq5SSIueyvU1+Roi2JAv2xTRxdd7HqpQ8skV/lqn7GEMZTcHBQHUF3AGxjDg+qzdXosuCyQdLKzPs9ZilzRISiPHIiw3aVyTPbcrRCux4+ExCwas3GxlKuxVcRLsG4t7wPVZ6VViP+UlqwZHLbL7xU68S/Kqy1llfbUG3edZvGs2mb829inMTjxB0w6wHH3PaDKhS7XJ5Taoc8mmrdG/BJnCCcj2JppDpyWVo3Bdpy31VeM=:rACvAXUA5HHI5yDNmCDsmmmHZPiiEf/aDN0zKTmbZow="
+    token = "3:HzkqWVcMvHxRwVt1SGQDqg==:Q3ovQLgAtEQEfNCAX9LwqFMFSb7dmM5Ra+xlaI1kNNPjvhRR//OK/o7HfdMJwJzFPV3EJgyIWj8GMbHFEiBkT8HneGf5S+RBJkNy1wZ8nMolIA1EINOf0idZVki5yf+q+at3Zh1FYkkH+fL0YaZf40Be592w68QBa5mtXb8FhGUI65KxxOZWVOwBuemMG3KS9pCZFy6rWsc6+P5ozxmsgVj/puglRyIt8uW2tQABSEoTkV0nHpIF9eLsmcR9ObaP9OqfxfpEHRgyOmL131owt7NYXmamaQErHfGpriD7WkxV4NoZCXSzOog92DmepASDm+J8Kc2a2iDX8W3gmDFjwlT7IvRGPZUejgRTfryHGgaXaUmqQKappMTp+PZEb0zxBvdtvDmTsnePzgkVQHESqhnxTLkeegY0OPmZFHQoYToTj34As7DcGG495TPsEqFiBlthuxIaoS4N7kpkyzmrlLnyhjBjUJDQRIgI9EZM9nb+R8cGsficDw/0joaqIE7TfGJo0kvc8bv0HeUR8qmdc8EjkHRjBLzq4vWCC4yAafc=:kaOC6WGuZOnhgMSzfi1iSU4Lx5w32Tk5hiJTuuiOpcE="
     cookies = {
         "reese84": token
     }
@@ -175,7 +175,7 @@ def starmarket(itemList, num):
         requestID = math.floor(1e13 * random.random())
         requestID = f"{requestID}"
         params = {
-            "request-id": "1081752589096177482",
+            "request-id": "5261752605320579594",
             "url": "https://www.starmarket.com",
             "pageurl": "https://www.starmarket.com",
             "pagename": "search",
@@ -247,7 +247,7 @@ def shaws(itemList, num):
         "ocp-apim-subscription-key": "5e790236c84e46338f4290aa1050cdd4",
     }
 
-    token = "3:liY80ijxUCBy1Gi5QtGRKg==:qLsZ7YnNGzXV0fmM4Pax/wsmeO/ICpA5BSgzv1AnnrryKVWJN6d7rNDeEc3KDKgtRBvJwQibFE0CKuRnqq1FJCj4ME4/BpQHtx/HGedxdOe3RMTZHZosjjN3BI9ZkEztc3kJS4n50mXa/31t1nWJl0Gjv/6GdxwXhG8OJ4uX8bjksdQf8RobbNiRsJKQV2LRz5XKHRhTLKVPfPYUUq1uaMjTWPHRx8uHlig81ztWP9ji87Cdlm7mFCmxjwevjc7e+URRqQVk93rkJhcV1fA3Umh/9zjgddFfo9FVH94GymAUMBlihDOo8BxG5Skh58eyDSEeBdUO7kJlgbUROdCXvFXK4ruoglmE8s2U7E4gi42UD02gzxl+ecnRFao50gZKgcgMHzekuWrmT8AQ3hrBf1ZNHzzKQXwFTN//HPPjW+9mgeYlA/5S2NLggM2VkYZt+dwODKn5YzTEzyEbUbQYqXDSSX0TkQGcdkkyrq9XXaFT3Cfgk1Rb+azzSauI7z1cOHJPeIb1659UxthlsJrkm802j2CDc2sshfqzn0nT/Wk=:wvlVtOBLmfyLBikRG7aRwFxxPgrGhZ0ci1PnygMPX/g="
+    token = "3:NCG3HcQFTcCA+7XGE2XOzg==:D94hyANuMVxIXfvy+utu2zwcNA5iPht4ymhsKSXPquCP8XFDdlDQq/39yGp+hOms4vhlD7Yrx36c+2sg9dEUQkLTGbngmuY25dWDrWh23piL1pe4okiDKFK9MlB7Xot/lkTHrpICZXmX4TtjdAlFkdJXl05NmO1fi28bW77tg5LMleVwJAdycsoNiaYMJ9t2+cRWnMR9lEStmmtAFi7vjqUH2qRIF3mHdJKoipeg4xxoUmAlA2Ol/dit6szmkjzi5s2BVI0ymEoaFGF7P24TPdOlG+b74fP8zKLoCuCWbepGfQ6NwRsz5Z9CBnGwsyYZX4bOJ0S7Z7PyCbVoTq2Ze2nYntSE1OxnuXOT+hpJ0ZM84RfkPM5guMXDItOVvohe8j7QXm5hUSvdmSt6SAAROyP5TB7PiU/SmvyiXsq/vVKY7tau8fF1AqKJXtMu09FQa+VI6a0rQGItkF42oaiTqSNb3XDE/HtCMurtexJ1JciVk/WT33YYS5SH2sq8/DG8uQIhMOQrqhByD2mJZyNPzYjdlxR1DInk+Nl5nm/BDtg=:DaJ6DPc+/e4GCuMj3ozR/2IRNEZlkY0vn4KB4nivzdU="
     cookies = {
         "reese84": token
     }
@@ -260,7 +260,7 @@ def shaws(itemList, num):
         requestID = math.floor(1e13 * random.random())
         requestID = f"{requestID}"
         params = {
-            "request-id": "1081752589096177482",
+            "request-id": "7201752605321844545",
             "url": "https://www.shaws.com",
             "pageurl": "https://www.shaws.com",
             "pagename": "search",
@@ -301,7 +301,7 @@ def shaws(itemList, num):
                 rating = float(review.get("avgRating", 0.0))
                 quality = rating / 5.0 if rating else 0.75
 
-                itemURL = f"https://www.starmarket.com/shop/product-details/{product.get('pid')}"
+                itemURL = f"https://www.shaws.com/shop/product-details/{product.get('pid')}"
 
                 rows.append({
                     "item": itemName,
@@ -319,89 +319,3 @@ def shaws(itemList, num):
 
     return pd.DataFrame(rows)
 
-
-def shaws(itemList, num):
-    print("Scraping Shaws")
-    rows = []
-
-    if isinstance(itemList, str):
-        itemList = [itemList]
-
-    headers = {
-        "accept": "application/json, text/plain, */*",
-        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
-        "ocp-apim-subscription-key": "5e790236c84e46338f4290aa1050cdd4",
-    }
-
-    token = "3:liY80ijxUCBy1Gi5QtGRKg==:qLsZ7YnNGzXV0fmM4Pax/wsmeO/ICpA5BSgzv1AnnrryKVWJN6d7rNDeEc3KDKgtRBvJwQibFE0CKuRnqq1FJCj4ME4/BpQHtx/HGedxdOe3RMTZHZosjjN3BI9ZkEztc3kJS4n50mXa/31t1nWJl0Gjv/6GdxwXhG8OJ4uX8bjksdQf8RobbNiRsJKQV2LRz5XKHRhTLKVPfPYUUq1uaMjTWPHRx8uHlig81ztWP9ji87Cdlm7mFCmxjwevjc7e+URRqQVk93rkJhcV1fA3Umh/9zjgddFfo9FVH94GymAUMBlihDOo8BxG5Skh58eyDSEeBdUO7kJlgbUROdCXvFXK4ruoglmE8s2U7E4gi42UD02gzxl+ecnRFao50gZKgcgMHzekuWrmT8AQ3hrBf1ZNHzzKQXwFTN//HPPjW+9mgeYlA/5S2NLggM2VkYZt+dwODKn5YzTEzyEbUbQYqXDSSX0TkQGcdkkyrq9XXaFT3Cfgk1Rb+azzSauI7z1cOHJPeIb1659UxthlsJrkm802j2CDc2sshfqzn0nT/Wk=:wvlVtOBLmfyLBikRG7aRwFxxPgrGhZ0ci1PnygMPX/g="
-    cookies = {
-        "reese84": token,
-
-    }
-
-    URL = "https://www.shaws.com/abs/pub/xapi/pgmsearch/v1/search/products"
-
-    for itemName in itemList:
-        print("Finding:", itemName)
-
-        params = {
-            "request-id": "6531752589803083615",
-            "url": "https://www.shaws.com",
-            "pageurl": "https://www.shaws.com",
-            "pagename": "search",
-            "rows": "30",
-            "start": "0",
-            "search-type": "keyword",
-            "storeid": "2653",         
-            "featured": "false",
-            "q": itemName,
-            "sort": "",
-            "dvid": "web-4.1search",
-            "channel": "instore",
-            "visitorId": "54eb4cba-028b-4892-a38e-9310a2ca7d44",
-            "pgm": "intg-search,merch-banner",
-            "banner": "shaws"
-        }
-
-        try:
-            response = requests.get(URL, headers=headers, cookies=cookies, params=params, timeout=30)
-            response.raise_for_status()
-            data = response.json()
-        except Exception as e:
-            print(f"Failed for {itemName}: {e}")
-            continue
-
-        docs = data.get("primaryProducts", {}).get("response", {}).get("docs", [])
-        print(f"Found {len(docs)} products for {itemName}")
-
-        for product in docs[:num]:
-            try:
-                name = product.get("name", "")
-                price = float(product.get("price", 0.0))
-                unit_quantity = product.get("unitQuantity", "1")
-                unit_measure = product.get("unitOfMeasure", "ea")
-                quantityUnits = f"{unit_quantity} {unit_measure}"
-
-                review = product.get("productReview", {})
-                rating = float(review.get("avgRating", 0.0))
-                quality = rating / 5.0 if rating else 0.75
-
-                itemURL = f"https://www.shaws.com/shop/product-details/{product.get('pid')}"
-
-                rows.append({
-                    "item": itemName,
-                    "price": price,
-                    "quantity": quantityUnits,
-                    "quality": quality,
-                    "store": "Shaws",
-                    "URL": itemURL,
-                    "productName": name
-                })
-
-            except Exception as e:
-                print(f"Error parsing product JSON for '{itemName}': {e}")
-                continue
-
-    return pd.DataFrame(rows)
-
-#print(shaws("Eggs",3))

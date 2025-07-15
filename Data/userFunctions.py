@@ -152,6 +152,64 @@ def updateStores(uid, storeIDs):
         connector.close()
         connection.close()
 
+#insertStores
+def insertStores(uid, storeIDs):
+    connection = db()
+    if not connection:
+        return
+    cursor = connection.cursor()
+
+    try:
+        storeIDs = list(storeIDs) + [0] * (5 - len(storeIDs))
+        storeIDs = storeIDs[:5]
+        storeIDs = [int(s) if str(s).isdigit() else 0 for s in storeIDs]
+
+        cursor.execute("""
+            INSERT INTO userStores (uid, store1ID, store2ID, store3ID, store4ID, store5ID)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """, (uid, *storeIDs))
+        
+        connection.commit()
+        print(f"Inserted stores for user {uid}: {storeIDs}")
+
+    except mysql.connector.Error as err:
+        print(f"Database error: {err}")
+    finally:
+        cursor.close()
+        connection.close()
+
+
+def getStoreIDs(stores):
+    connection = db()
+    if not connection:
+        return [0] * len(stores)
+    cursor = connection.cursor()
+    try:
+        presentStores = []
+        index = []
+        for i, store in enumerate(stores):
+            if store and store != "0" and store != "":
+                presentStores.append(store)
+                index.append(i)
+        storeIDs = [0] * len(stores)
+        if not presentStores:
+            return storeIDs
+        placeholders = ','.join(['%s' for _ in presentStores])
+        query = f"SELECT storeID, storeName FROM storeInfo WHERE storeName IN ({placeholders})"
+        cursor.execute(query, presentStores)
+        results = cursor.fetchall()
+        storeIDMap = {row[1]: row[0] for row in results}
+        for i, store in enumerate(presentStores):
+            original_pos = index[i]
+            storeIDs[original_pos] = storeIDMap.get(store, 0)
+        return storeIDs
+    except mysql.connector.Error as err:
+        print(f"Database error: {err}")
+        return [0] * len(stores)
+    finally:
+        cursor.close()
+        connection.close()
+
 # usernameChanger
 def updateUserName(uid, new_name):
     connection = db()
@@ -225,7 +283,7 @@ def userLogin(username, password):
     try:
         connector.execute("""
             SELECT password FROM userInfo
-            WHERE username = %s
+            WHERE email = %s
         """, (username,))
         result = connector.fetchone()
         return result[0] if result else None
