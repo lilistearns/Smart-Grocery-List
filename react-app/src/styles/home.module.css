@@ -1,3 +1,21 @@
+body {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+button {
+    text-align: center;
+    padding: 15px 15px;
+    font-size: 16px;
+    border-radius: 15px;
+}
+
+hr {
+    margin-top: 30px;
+    margin-left: 5px;
+    margin-right: 10px;
+}
+
 nav {
     align-items: center;
     display: flex;
@@ -8,6 +26,11 @@ nav {
         justify-content: space-between;
     }
 
+        .header_title {
+            text-align: center;
+            flex-basis: 300px;
+        }
+
     .loggedout_nav {
         justify-content: flex-end;
     }
@@ -16,23 +39,46 @@ nav {
             padding: 10px;
         }
 
-
-.header_title {
-    text-align: center;
-    flex-basis: 300px;
-}
+/* Logged In */
 
 .user {
-    padding-left: 10px;
-    padding-top: 10px;
+    margin-left: 10px;
+    margin-top: 20px;
+    margin-bottom: 50px;
 }
 
-button {
-    text-align: center;
-    padding: 15px 15px;
-    font-size: 16px;
-    border-radius: 15px;
+.ml_instructions {
+    margin-top: 30px;
+    margin-bottom: 20px;
 }
+
+.ml_inputbox {
+    margin-left: 5px;
+    margin-right: 10px;
+}
+
+.ml_option {
+    background-color: #f5e6db;
+    border-radius: 15px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 5px;
+    margin-right: 5px;
+    padding: 5px;
+}
+
+.ml_output {
+    background-color: #c0afa2;
+    list-style: none;
+    display: table;
+    border-radius: 30px;
+    margin-top: 20px;
+    padding: 5px;
+    
+}
+
+
+/* Logged Out */
 
 .container {
     position: relative;
@@ -40,6 +86,22 @@ button {
     text-align: center;
     padding-bottom: 20px;
 }
+
+    .container ol {
+        list-style: none;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    .container ol li {
+        background-color: #f5e6db;
+        margin-top: 10px;
+        padding: 15px;
+        width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+        border-radius: 15px;
+    }
 
     .title {
         font-size: 60px;
@@ -65,22 +127,6 @@ button {
     .process_text{
         position: relative;
         top: 25px;
-    }
-
-    .container ol {
-        list-style: none;
-        margin-top: 20px;
-        margin-bottom: 20px;
-    }
-
-    .container ol li {
-        background-color: #f5e6db;
-        margin-top: 10px;
-        padding: 15px;
-        width: 400px;
-        margin-left: auto;
-        margin-right: auto;
-        border-radius: 15px;
     }
 
     .start {
