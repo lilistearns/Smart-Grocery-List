@@ -4,8 +4,7 @@ from cachelib.file import FileSystemCache # session backend
 from flask_bcrypt import Bcrypt # password hashing
 from flask_cors import CORS
 import sys
-sys.path.append("../Data")
-sys.path.append("../ML")
+sys.path.append("./Data")
 import userFunctions
 sys.path.append("./ML")
 import item
@@ -64,8 +63,11 @@ def insertPreferences():
     quant = request.json.get("price")
     size = request.json.get("size")
     diet = request.json.get("diet")
+    print("Made it here")
     email = session.get("email")
+    print(email)
     uid = userFunctions.getUID(email)
+    print(uid)
 
     userFunctions.insertPreferences(uid, qual, price, quant,size, diet)
     return jsonify({"message": "Preference Creation Successful"})
@@ -116,12 +118,14 @@ def updatePreferences():
 
     email = session.get("email")
     uid = userFunctions.getUID(email)
-    userFunctions.updatePreferences(uid, qual, price, quant)
+    status = userFunctions.updatePreferences(uid, qual, price, quant)
+    print(status)
     return jsonify({"message": "Update Successful"})
 
 @app.route("/updateDiet", methods=["POST"])
 def updateDiet():
     diet = request.json.get("diet")
+    print(diet)
     email = session.get("email")
     uid = userFunctions.getUID(email)
     userFunctions.updateDiet(uid, diet)

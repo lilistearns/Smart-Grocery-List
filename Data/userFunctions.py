@@ -104,7 +104,7 @@ def updateDiet(uid, diet):
     if not connection:
         return
     connector = connection.cursor()
-
+    print(diet)
     try:
         connector.execute("""
             UPDATE userPreferences
@@ -250,5 +250,4 @@ def getUID(email):
         print(f"DB error: {err}")
         return None
     finally:
-        connector.close()
         connection.close()

@@ -124,6 +124,7 @@ export function Update() {
         e.preventDefault()
 
         const data = {diet}
+        console.log(diet)
         const url = "http://127.0.0.1:5000/updateDiet"
 
         const options = {
@@ -242,10 +243,11 @@ export function Update() {
                     <form onSubmit={onSubmitDiet}>
                         <label>
                         Diet:
-                            <select name="diet" onChange={(e) => setDiet(e.target.value)}>
-                                <option name="diet" value="vegitarian">Vegitarian</option>
-                                <option name="diet" value="vegan">Vegan</option>
-                                <option name="diet" value="keto">Keto</option> 
+                            <select name="diet" value={diet} onChange={(e) => setDiet(e.target.value)}>
+                                <option value="No Diet">"No Diet"</option>
+                                <option value="vegetarian">Vegetarian</option>
+                                <option value="vegan">Vegan</option>
+                                <option value="keto">Keto</option> 
                             </select>
                         </label>
                     <button type="submit">Submit</button> 

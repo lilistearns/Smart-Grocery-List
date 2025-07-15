@@ -258,10 +258,10 @@ def listRecommender(itemList, uid):
     for store in listOfStores:
         func = getattr(webscraper, store[0], None)
         if callable(func):
-            storeDF = func(itemList, 5)
-            if isinstance(storeDF, pd.DataFrame):
-                dfs.append(storeDF)
-
+            if(func != "walmart"):
+                storeDF = func(itemList, 5)
+                if isinstance(storeDF, pd.DataFrame):
+                    dfs.append(storeDF)
     if not dfs:
         return []
 
@@ -301,6 +301,6 @@ def listRecommender(itemList, uid):
 
     return listR
 
-#listItem = listRecommender(("Milk","Brown Eggs"),3)
+#listItem = listRecommender(("Milk","Eggs"),3)
 #print(listItem)
 #saveListRecommendation(listItem,3)
