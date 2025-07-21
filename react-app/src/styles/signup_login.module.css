@@ -1,0 +1,42 @@
+.form {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+    .form p {
+        margin-top: 10px;
+        margin-bottom: 10px;
+        text-align: left;
+    }
+
+    .form input {
+        margin-bottom: 20px;
+        width: 100%;
+        padding: 12px 5px;
+        box-sizing: border-box;
+    }
+
+.button {
+    width: 100%;
+}
+
+.container {
+    position: relative;
+    top: 70px;
+    text-align: center;
+    
+}
+
+    .header {
+            font-size: 50px;
+            text-align: center;
+        }
+
+    .form_elements {
+        margin-top: 50px;
+        width: 300px;
+    }
+
+
+    

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import classes from "../styles/signup_login.module.css"
 
 export function Login() {
 
@@ -35,20 +36,25 @@ export function Login() {
     }
 
     return (
-        <div>
+        <div className={classes.container}>
 
-            <h1>Logging in:</h1>
+            <p className={classes.header}>Logging In</p>
 
-            <form onSubmit={onSubmit}>
-                <label>
-                    Email:
-                    <input type="email" name="sendEmail" value={sendEmail} onChange={(e) => setSendEmail(e.target.value)}></input>
-                </label>
-                <label>
-                    Password:
-                    <input type="password" name="sendPassword" value={sendPassword} onChange={(e) => setSendPassword(e.target.value)}></input>
-                </label>
-            <button type="submit">Submit</button>  
+            <form onSubmit={onSubmit} className={classes.form}>
+                <div className={classes.form_elements}>
+                    <label>
+                        <p>Email:</p>
+                        <input type="email" name="sendEmail" value={sendEmail} onChange={(e) => setSendEmail(e.target.value)}></input>
+                    </label>
+                    <label>
+                        <p>Password:</p>
+                        <input type="password" name="sendPassword" value={sendPassword} onChange={(e) => setSendPassword(e.target.value)}></input>
+                    </label>
+                    <button type="submit" className={classes.button}>Submit</button>  
+
+                    <p>Need an account? <a href = "/signup">Create an Account</a></p>
+                    
+                </div>
             </form>
 
         </div>

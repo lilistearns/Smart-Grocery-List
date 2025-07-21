@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react'
+import classes from "../styles/signup_login.module.css"
 
 export function SignUp() {
 
@@ -39,28 +40,32 @@ export function SignUp() {
 
 
     return (
-        <div>
+        <div className={classes.container}>
 
-            <h1>Creating an Account:</h1>
+            <p className={classes.header}>Creating an Account</p>
 
-            <form onSubmit={onSubmit}>
-                <label>
-                    Name:
-                    <input type="text" name="sendName" value={sendName} onChange={(e) => setSendName(e.target.value)}></input>
-                </label>
-                <label>
-                    Email:
-                    <input type="email" name="sendEmail" value={sendEmail} onChange={(e) => setSendEmail(e.target.value)}></input>
-                </label>
-                <label>
-                    Username:
-                    <input type="text" name="sendUsername" value={sendUsername} onChange={(e) => setSendUsername(e.target.value)}></input>
-                </label>
-                <label>
-                    Password:
-                    <input type="password" name="sendPassword" value={sendPassword} onChange={(e) => setSendPassword(e.target.value)}></input>
-                </label>
-            <button type="submit">Submit</button>  
+            <form onSubmit={onSubmit} className={classes.form}>
+                <div className={classes.form_elements}>
+                    <label>
+                        <p>Name:</p>
+                        <input type="text" name="sendName" value={sendName} onChange={(e) => setSendName(e.target.value)}></input>
+                    </label>
+                    <label>
+                        <p>Email:</p>
+                        <input type="email" name="sendEmail" value={sendEmail} onChange={(e) => setSendEmail(e.target.value)}></input>
+                    </label>
+                    <label>
+                        <p>Username:</p>
+                        <input type="text" name="sendUsername" value={sendUsername} onChange={(e) => setSendUsername(e.target.value)}></input>
+                    </label>
+                    <label>
+                        <p>Password:</p>
+                        <input type="password" name="sendPassword" value={sendPassword} onChange={(e) => setSendPassword(e.target.value)}></input>
+                    </label>
+                    <button type="submit" className={classes.button}>Submit</button>  
+
+                    <p>Already have an account? <a href = "/login">Login</a></p>
+                </div>
             </form>
 
         </div>

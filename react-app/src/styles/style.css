@@ -13,5 +13,26 @@ body {
     line-height: 1;    
 }
 
+button {
+    text-align: center;
+    padding: 15px 15px;
+    font-size: 16px;
+    border-radius: 15px;
+    border: 0;
+    background-color: var(--accent);
+}
 
+    button:hover {
+        background-color: var(--accent-light);
+        cursor: pointer;
+    }
+
+    
+a {
+    color: blue;
+}
+
+    a:hover {
+        color: rgb(132, 0, 255);
+    }
 
