@@ -101,15 +101,14 @@ def modelMaker(uid):
 
     if not os.path.exists(jsonPath):
         print(f"No sample data found for UID {uid}. Training minimal model with only preference scores.")
-
-        # Create dummy training data: One sample, rating = average of weights
         x = np.array([[pref["quantPercent"], pref["qualPercent"], pref["pricePercent"]]])
         y = np.array([(pref["quantPercent"] + pref["qualPercent"] + pref["pricePercent"]) / 3])
 
         model = tf.keras.Sequential([
             tf.keras.layers.Input(shape=(3,)),
-            tf.keras.layers.Dense(8, activation="relu"),
-            tf.keras.layers.Dense(1, activation="sigmoid")
+            tf.keras.layers.Dense(16, activation="relu"),
+            tf.keras.layers.Dense(16, activation="relu"),
+            tf.keras.layers.Dense(2, activation="sigmoid")
         ])
         model.compile(optimizer='adam', loss=tf.keras.losses.MeanSquaredError())
         model.fit(x, y, epochs=100, verbose=1)
@@ -119,7 +118,6 @@ def modelMaker(uid):
         return
 
     
-    # If sample data exists, do full training
     X, Y = dataRetrieval(jsonPath, uid)
     df = pd.DataFrame(X, columns=[
         "price", "quantity", "quality",

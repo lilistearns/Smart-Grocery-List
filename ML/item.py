@@ -1,8 +1,10 @@
 import os
 import warnings
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # 0=all, 1=info, 2=warning, 3=error only
-os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'  # Disable oneDNN optimizations warnings
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'  
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 warnings.filterwarnings('ignore')
@@ -177,9 +179,7 @@ def recommender(data, model, pricePercent, qualityPercent, quantityPercent):
     input["quality"] *= qw
     input["quantity"] *= qtw
 
-    expected_input_shape = model.input_shape[-1]
-
-    if expected_input_shape == 6:
+    if model.input_shape[-1] == 6:
         input["pricePercent"] = pricePercent 
         input["qualPercent"] = qualityPercent 
         input["quantPercent"] = quantityPercent 
@@ -215,23 +215,47 @@ def bestList(data, model, pricePercent, qualityPercent, quantityPercent, origina
             baskets.append((avg_score, basket_df))
 
     baskets.sort(reverse=True, key=lambda x: x[0])
-    return baskets[0][1] if baskets else pd.DataFrame()
+    return [basket_df for _, basket_df in baskets]
 
+def parallelScrape(listOfStores, *args, exclude_stores=None, max_workers=None):
+    exclude_stores = set(exclude_stores or [])
+    dfs = []
 
-def itemRecommender(item,uid):
+    def scrape_wrapper(store_name):
+        if store_name in exclude_stores:
+            return pd.DataFrame()
+        func = getattr(webscraper, store_name, None)
+        if callable(func):
+            try:
+                df = func(*args)
+                if isinstance(df, pd.DataFrame):
+                    return df
+            except Exception as e:
+                print(f"[Error] {store_name}: {e}")
+        return pd.DataFrame()
+
+    with ThreadPoolExecutor(max_workers=max_workers or len(listOfStores)) as executor:
+        futures = {
+            executor.submit(scrape_wrapper, store[0]): store[0]
+            for store in listOfStores
+        }
+        for future in as_completed(futures):
+            result = future.result()
+            if not result.empty:
+                dfs.append(result)
+
+    return dfs 
+
+def itemRecommender(item, uid):
     model = load_model(f"UserData/{uid}/model-{uid}.h5")
     prefs, listOfStores = userQuery(uid)
-    dfs =[]
-    for store in listOfStores:
-        func = getattr(webscraper, store[0], None)
-        storeDF = func(item,10)
-        dfs.append(storeDF)
-    
-    originalData = pd.concat(dfs,ignore_index=True)
+
+    dfs = parallelScrape(listOfStores, item, 10,exclude_stores={"walmart"})
+
+    originalData = pd.concat(dfs, ignore_index=True)
     data = originalData.copy()
     data['quantity'] = data['quantity'].apply(quantityNormalizer)
-    print(data)
-    
+
     recommendations = recommender(
         data,
         model,
@@ -239,14 +263,14 @@ def itemRecommender(item,uid):
         prefs["qualPercent"],
         prefs["quantPercent"],
     )
-    
-    predicted = recommendations.head(3).index
-    
+
+    predicted = recommendations.head(10).index
+
     itemsR = list(
-        originalData.loc[predicted, ["store", "price", "URL","productName","quantity"]]
+        originalData.loc[predicted, ["store", "price", "URL", "productName", "quantity"]]
         .itertuples(index=False, name=None)
     )
-    
+
     return itemsR
 
 def listRecommender(itemList, uid):
@@ -254,14 +278,8 @@ def listRecommender(itemList, uid):
     model = load_model(model_path)
     prefs, listOfStores = userQuery(uid)
 
-    dfs = []
-    for store in listOfStores:
-        func = getattr(webscraper, store[0], None)
-        if callable(func):
-            if(func != "walmart"):
-                storeDF = func(itemList, 5)
-                if isinstance(storeDF, pd.DataFrame):
-                    dfs.append(storeDF)
+    dfs = parallelScrape(listOfStores, itemList, 5, exclude_stores={"walmart"})
+
     if not dfs:
         return []
 
@@ -269,7 +287,7 @@ def listRecommender(itemList, uid):
     data = originalData.copy()
     data['quantity'] = data['quantity'].apply(quantityNormalizer)
 
-    recommendations = bestList(
+    baskets = bestList(
         data,
         model,
         prefs["pricePercent"],
@@ -278,29 +296,30 @@ def listRecommender(itemList, uid):
         itemList
     )
 
-    if recommendations.empty:
+    if not baskets:
         return []
-    required_columns = {"store", "item"}
-    if not required_columns.issubset(recommendations.columns) or not required_columns.issubset(originalData.columns):
-        raise ValueError("Required columns 'store' and 'item' not found in recommendations or original data")
 
-    merged = (
-        pd.merge(
-            recommendations[["store", "item"]],
-            originalData,
-            on=["store", "item"],
-            how="left"
+    results = []
+
+    for basket in baskets:
+        merged = (
+            pd.merge(
+                basket[["store", "item"]],
+                originalData,
+                on=["store", "item"],
+                how="left"
+            )
+            .drop_duplicates(subset=["item"])
         )
-        .drop_duplicates(subset=["item"])
-    )
 
-    listR = list(
-        merged[["store", "price", "URL", "productName", "quantity"]]
-        .itertuples(index=False, name=None)
-    )
+        item_set = list(
+            merged[["store", "price", "URL", "productName", "quantity"]]
+            .itertuples(index=False, name=None)
+        )
+        results.append(item_set)
 
-    return listR
+    return results
 
-#listItem = listRecommender(("Milk","Eggs"),3)
+#listItem = itemRecommender("Milk",3)
 #print(listItem)
 #saveListRecommendation(listItem,3)

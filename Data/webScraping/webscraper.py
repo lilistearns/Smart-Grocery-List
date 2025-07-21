@@ -110,10 +110,6 @@ def hannaford(itemList, num):
         response = requests.get(URL, headers=headers)
         soup = BeautifulSoup(response.content, "html.parser")
         products = soup.find_all("div", class_="plp_thumb_wrap product-impressions")
-        
-        with open("hannaford_page.html", "w", encoding="utf-8") as f:
-            f.write(soup.prettify())
-            
         print(f"Found {len(products)} products")
         non_sponsored_products = []
         for product in products:
@@ -162,7 +158,7 @@ def starmarket(itemList, num):
         "ocp-apim-subscription-key": "5e790236c84e46338f4290aa1050cdd4",
     }
 
-    token = "3:HzkqWVcMvHxRwVt1SGQDqg==:Q3ovQLgAtEQEfNCAX9LwqFMFSb7dmM5Ra+xlaI1kNNPjvhRR//OK/o7HfdMJwJzFPV3EJgyIWj8GMbHFEiBkT8HneGf5S+RBJkNy1wZ8nMolIA1EINOf0idZVki5yf+q+at3Zh1FYkkH+fL0YaZf40Be592w68QBa5mtXb8FhGUI65KxxOZWVOwBuemMG3KS9pCZFy6rWsc6+P5ozxmsgVj/puglRyIt8uW2tQABSEoTkV0nHpIF9eLsmcR9ObaP9OqfxfpEHRgyOmL131owt7NYXmamaQErHfGpriD7WkxV4NoZCXSzOog92DmepASDm+J8Kc2a2iDX8W3gmDFjwlT7IvRGPZUejgRTfryHGgaXaUmqQKappMTp+PZEb0zxBvdtvDmTsnePzgkVQHESqhnxTLkeegY0OPmZFHQoYToTj34As7DcGG495TPsEqFiBlthuxIaoS4N7kpkyzmrlLnyhjBjUJDQRIgI9EZM9nb+R8cGsficDw/0joaqIE7TfGJo0kvc8bv0HeUR8qmdc8EjkHRjBLzq4vWCC4yAafc=:kaOC6WGuZOnhgMSzfi1iSU4Lx5w32Tk5hiJTuuiOpcE="
+    token = "3:AkNW6Th9+xZRRsqyVy200Q==:1BULnwdB05ImrLl2nbZnCraY77/d31Ai3han9u2pmKiiIEZiFILYQ3SrydCUgmAMUwIuytCq1mnlmFSaMNiyrtbe3sP7Bxcu5SunjKCUeIuaMIIgl/60J8C+Ox+bwdW33N6RHEdK7ZfqReQ+xaNvlV8zq9wWaHk4S6Uo8LUufRZvP6rjjOcStgMPLPLKXMK+UcqjPFLjrFqQ5Uv1+hmi4ZfqzLjPMO71ukKAWT+IYoTt58mytrE77rLIgGHdwWWUaNwHuWO4q3nBGBtigDNELX5AQ3WRJYTuLc0xZclnPo/1u+O3mBU40tVWo+3dtcbS22stRr+v1mRVMPwEkeAj+teX98tcatTdDEarrxV6A3syEj2FvCKzauMzhTDW8pbn47TbgGwmhSeN1iMZhf6oYSJiXePxdatIPnrhXQM+pAUY/jSezOuBT3Sz+JEyuuMy0x6D3drfBNydKNlN6Y0gZGH5APNyG/0X/GwIoacrDh+vqSqon+zzlCbkusKp1y4exqxU/OofIakko7nIMVZA9rHq8jUwR3Dqnen6w3Jz2MI=:lntSjMFSPd5xte3gZY9PsNu16+m3bgHc0bfaxuOzpFY="
     cookies = {
         "reese84": token
     }
@@ -175,7 +171,7 @@ def starmarket(itemList, num):
         requestID = math.floor(1e13 * random.random())
         requestID = f"{requestID}"
         params = {
-            "request-id": "5261752605320579594",
+            "request-id": "1791753108631432745",
             "url": "https://www.starmarket.com",
             "pageurl": "https://www.starmarket.com",
             "pagename": "search",
@@ -247,7 +243,7 @@ def shaws(itemList, num):
         "ocp-apim-subscription-key": "5e790236c84e46338f4290aa1050cdd4",
     }
 
-    token = "3:NCG3HcQFTcCA+7XGE2XOzg==:D94hyANuMVxIXfvy+utu2zwcNA5iPht4ymhsKSXPquCP8XFDdlDQq/39yGp+hOms4vhlD7Yrx36c+2sg9dEUQkLTGbngmuY25dWDrWh23piL1pe4okiDKFK9MlB7Xot/lkTHrpICZXmX4TtjdAlFkdJXl05NmO1fi28bW77tg5LMleVwJAdycsoNiaYMJ9t2+cRWnMR9lEStmmtAFi7vjqUH2qRIF3mHdJKoipeg4xxoUmAlA2Ol/dit6szmkjzi5s2BVI0ymEoaFGF7P24TPdOlG+b74fP8zKLoCuCWbepGfQ6NwRsz5Z9CBnGwsyYZX4bOJ0S7Z7PyCbVoTq2Ze2nYntSE1OxnuXOT+hpJ0ZM84RfkPM5guMXDItOVvohe8j7QXm5hUSvdmSt6SAAROyP5TB7PiU/SmvyiXsq/vVKY7tau8fF1AqKJXtMu09FQa+VI6a0rQGItkF42oaiTqSNb3XDE/HtCMurtexJ1JciVk/WT33YYS5SH2sq8/DG8uQIhMOQrqhByD2mJZyNPzYjdlxR1DInk+Nl5nm/BDtg=:DaJ6DPc+/e4GCuMj3ozR/2IRNEZlkY0vn4KB4nivzdU="
+    token = "3:hULRsIknrFIWj+XeFETIpA==:wCiij3fKVR7FnIKPsXsB8T5KVGJvYSAOcJCVZqhGlbxrr66jLw+fKO8RBsZI/k1e7ygxjUhbq3voWryzrUYyvHuyfUATMVLOYHIYGURUnYOiOpveXs+s9maBY5/R2bzv4RBFkdiySuNk/RIIOXJK+/hNbvd31Iy7I0TDiTX/M4kruqK6Ggrn49dNESJfc2R/GH1l/OV7/kJmDerG/uL6sZHA70717LSgmH8+vPbaVeL/PPe3A2YG9llbZExfF/azRJ7/tEFs92GIfKKTQRHn2wifmMd1H6tJYZvU9genAH97ueZ25RDjSWOIdfR8ZIGhD4Kinh4PafY7E4bhORLwxv3h7was44Pf97RrSrFi8bpeqTO6RcUN99QzYfFHL4JdiSdaOG5nwu0ondfLqkxHYUrs7f+D9a0X8pwq2FKhGhwzLtbJ5I8AopK1K0TjzrH6qLF43sna2+Tb1q1ydgjCqCqmGrzDRnsZKqDcFPZJZDTwBcViMvjsTDqWosekZ58sqaksmuhlZ32ohxO/EZXOHzIw43Sqqs/ZdkgaX6qHxbk=:ECecNzGCrZSYzcRn6lJCkB6C7YvI/IUpK/6y1j7aH7c="
     cookies = {
         "reese84": token
     }
@@ -260,7 +256,7 @@ def shaws(itemList, num):
         requestID = math.floor(1e13 * random.random())
         requestID = f"{requestID}"
         params = {
-            "request-id": "7201752605321844545",
+            "request-id": "7361753108651798413",
             "url": "https://www.shaws.com",
             "pageurl": "https://www.shaws.com",
             "pagename": "search",
@@ -308,7 +304,7 @@ def shaws(itemList, num):
                     "price": price,
                     "quantity": quantityUnits,
                     "quality": quality,
-                    "store": "Star Market",
+                    "store": "Shaw's",
                     "URL": itemURL,
                     "productName": name
                 })
@@ -318,4 +314,3 @@ def shaws(itemList, num):
                 continue
 
     return pd.DataFrame(rows)
-

@@ -173,6 +173,9 @@ def findItem():
     #OUTPUT: [('Hannaford', 1.49, 'https://www.hannaford.com/product/hannaford-whole-milk/932359?hdrKeyword=Milk', 'Hannaford Whole Milk', 'Quart'), ('Walmart', 1.88, 'https://www.walmart.com/ip/Great-Value-Milk-2-Reduced-Fat-Half-Gallon-64-fl-oz-Jug/10450119?classType=REGULAR&athbdg=L1600', 'Great Value Milk, 2% Reduced Fat, Half Gallon, 64 fl oz Jug', '1 each'), ('Walmart', 1.94, 'https://www.walmart.com/ip/Great-Value-Milk-Whole-Vitamin-D-Half-Gallon-Plastic-Jug-64oz/10450118?classType=REGULAR&athbdg=L1600', 'Great Value Milk Whole Vitamin D, Half Gallon, Plastic, Jug, 64oz', '64 oz')]
     #[(Store,price,URL,Product Name,quantity)]
 
+    #NEW OUTPUT: [("Shaw's", 3.69, 'https://www.shaws.com/shop/product-details/970038173', 'Hood Whole Milk - 64 Oz', 'GAL HG'), ('Star Market', 3.69, 'https://www.starmarket.com/shop/product-details/970038173', 'Hood Whole Milk - 64 Oz', 'GAL HG'), ("Shaw's", 2.69, 'https://www.shaws.com/shop/product-details/136010013', 'Lucerne Milk - Half Gallon (container may vary)', 'GAL HG'), ('Star Market', 2.69, 'https://www.starmarket.com/shop/product-details/136010013', 'Lucerne Milk - Half Gallon (container may vary)', 'GAL HG'), ('Star Market', 2.69, 'https://www.starmarket.com/shop/product-details/136010016', 'Lucerne Milk Reduced Fat 2% Milkfat - 64 Fl. Oz. (package may vary)', 'GAL HG'), ("Shaw's", 2.69, 'https://www.shaws.com/shop/product-details/136010016', 'Lucerne Milk Reduced Fat 2% Milkfat - 64 Fl. Oz. (package may vary)', 'GAL HG'), ('Star Market', 6.99, 'https://www.starmarket.com/shop/product-details/136050129', 'Lactaid Whole Milk - 96 Oz', 'GAL. FZ'), ("Shaw's", 6.99, 'https://www.shaws.com/shop/product-details/136050129', 'Lactaid Whole Milk - 96 Oz', 'GAL. FZ'), ("Shaw's", 3.99, 'https://www.shaws.com/shop/product-details/136010449', 'Lucerne Milk Lowfat 1% Milkfat 1 Gallon - 128 Fl. Oz.', 'GAL. GA'), ('Star Market', 3.99, 'https://www.starmarket.com/shop/product-details/136010121', 'Lucerne Milk Whole 1 Gallon - 128 Fl. Oz.', 'GAL. GA')]
+
+    
 @app.route("/findList", methods=["POST"])
 def findList():
     inputList = request.json.get("itemList")
@@ -181,5 +184,40 @@ def findList():
     return item.listRecommender(inputList, uid)
     #OUTPUT: [('Hannaford', 2.59, 'https://www.hannaford.com/product/hannaford-whole-milk/932363?hdrKeyword=Milk', 'Hannaford Whole Milk', 'Gallon'), ('Hannaford', 4.19, 'https://www.hannaford.com/product/nature-s-promise-free-range-large-brown-eggs/988051?hdrKeyword=Brown+Eggs', "Nature's Promise Free Range Large Brown Eggs", '12 Ct')]
     #[(Store,price,URL,Product Name,quantity),(Store,price,URL,Product Name,quantity),(Store,price,URL,Product Name,quantity),...,]
+
+    #NEW OUTPUT: [[('Star Market', 3.99, 'https://www.starmarket.com/shop/product-details/136010121', 'Lucerne Milk Whole 1 Gallon - 128 Fl. Oz.', '1 ea'), ('Star Market', 4.49, 'https://www.starmarket.com/shop/product-details/960273951', 'Lucerne Farms Eggs Large Cage Free - 12 Count', 'DOZEN CT')], [("Shaw's", 3.99, 'https://www.shaws.com/shop/product-details/136010121', 'Lucerne Milk Whole 1 Gallon - 128 Fl. Oz.', '1 ea'), ("Shaw's", 4.49, 'https://www.shaws.com/shop/product-details/960273951', 'Lucerne Farms Eggs Large Cage Free - 12 Count', 'DOZEN CT')], [('Hannaford', 2.59, 'https://www.hannaford.com/product/hannaford-whole-milk/932363?hdrKeyword=Milk', 'Hannaford Whole Milk', 'Gallon'), ('Hannaford', 4.39, 'https://www.hannaford.com/product/pete-gerry-s-organic-cage-free-grade-a-extra-large-eggs/866130?hdrKeyword=Eggs', "Pete & Gerry's Organic Cage Free Grade A Extra Large Eggs", '6 Ct')]]
+    
+
+@app.route("/acceptItem", methods=["POST"])
+def acceptItem():
+    goodItem = request.json.get("item")
+    email = session.get("email")
+    uid = userFunctions.getUID(email)
+    userFunctions.saveItem(goodItem,uid)
+
+
+
+@app.route("/acceptList", methods=["POST"])
+def acceptList():
+    goodList = request.json.get("list")
+    email = session.get("email")
+    uid = userFunctions.getUID(email)
+    userFunctions.saveList(goodList,uid)
+
+@app.route("/rejectItem", methods=["POST"])
+def rejectItem():
+    badItem = request.json.get("item")
+    email = session.get("email")
+    uid = userFunctions.getUID(email)
+    userFunctions.rejectItem(badItem,uid)
+
+
+@app.route("/rejectList", methods=["POST"])
+def rejectList():
+    badList= request.json.get("list")
+    email = session.get("email")
+    uid = userFunctions.getUID(email)
+    userFunctions.rejectList(badList,uid)
+
 if __name__ == '__main__':
     app.run(debug=True)
