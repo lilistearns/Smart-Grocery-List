@@ -1,43 +1,43 @@
-body {
-    margin-left: 10px;
-    margin-right: 10px;
-}
+@import url('colors.css');
 
-button {
-    text-align: center;
-    padding: 15px 15px;
-    font-size: 16px;
-    border-radius: 15px;
-}
-
-hr {
+.line_divider {
     margin-top: 30px;
     margin-left: 5px;
     margin-right: 10px;
 }
 
-nav {
+.loggedin_nav {
     align-items: center;
     display: flex;
+    justify-content: space-between;
     margin: 10px;
 }
 
-    .loggedin_nav {
-        justify-content: space-between;
+    .header_title {
+        text-align: center;
+        flex-basis: 300px;
     }
 
-        .header_title {
-            text-align: center;
-            flex-basis: 300px;
-        }
+.loggedout_nav {
+    position: sticky;
+    top: 10px;
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    margin: 10px;
+}
 
-    .loggedout_nav {
+    .nav_title {
+        font-weight: bold;
+    }
+
+    .nav_action {
         justify-content: flex-end;
     }
 
-        .loggedout_nav a {
-            padding: 10px;
-        }
+    .loggedout_nav a {
+        padding: 10px;
+    }
 
 /* Logged In */
 
@@ -58,17 +58,17 @@ nav {
 }
 
 .ml_option {
-    background-color: #f5e6db;
+    background-color: var(--background);
     border-radius: 15px;
-    margin-top: 10px;
-    margin-bottom: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
     margin-left: 5px;
     margin-right: 5px;
-    padding: 5px;
+    padding: 10px;
 }
 
 .ml_output {
-    background-color: #c0afa2;
+    background-color: var(--background-shade);
     list-style: none;
     display: table;
     border-radius: 30px;
@@ -81,10 +81,10 @@ nav {
 /* Logged Out */
 
 .container {
-    position: relative;
-    top: 80px;
-    text-align: center;
-    padding-bottom: 20px;
+    margin-top: 20px;
+    margin-bottom: 75px;
+    margin-left: 10px;
+    margin-right: 10px;
 }
 
     .container ol {
@@ -94,46 +94,56 @@ nav {
     }
 
     .container ol li {
-        background-color: #f5e6db;
-        margin-top: 10px;
-        padding: 15px;
-        width: 400px;
-        margin-left: auto;
-        margin-right: auto;
-        border-radius: 15px;
-    }
-
-    .title {
-        font-size: 60px;
-        margin-bottom: 25px;
-    }
-
-    .subtitle {
-        font-size:30px;
-        margin-bottom: 15px;
-    }
-
-    .process {
-        background-color: #c0afa2;
-        height: 320px;
-        width: 500px;
-        margin-left: auto;
-        margin-right: auto;
+        background-color: var(--background-shade);
         margin-top: 50px;
-        margin-bottom: 50px;
+        padding: 50px 20px;
+        width: 600px;
+        margin-left: auto;
+        margin-right: auto;
         border-radius: 15px;
     }
 
-    .process_text{
-        position: relative;
-        top: 25px;
+.content_container {
+    position: relative;
+    top: 100px;
+    text-align: center;
+    padding-bottom: 20px;
+}
+
+.heading {
+    font-size:50px;
+    font-weight: bold;
+    margin-top: 100px;
+    margin-bottom: 30px;
+}
+
+.sub_heading {
+    font-size:25px;
+}
+
+.process {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 275px;
+    margin-bottom: 75px;
+    border-radius: 15px;
+}
+
+    .process_header {
+        font-weight: bold;
+        font-size: 30px;
+        margin-bottom: 30px;
     }
 
-    .start {
-        margin-bottom: 15px;
+    .process_text {
+        font-size: 20px;
     }
 
-    .login {
-        margin-top: 15px;
-        margin-bottom: 15px;
-    }
+.get_started {
+    width: 30%;
+}
+
+.already_account_text {
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
