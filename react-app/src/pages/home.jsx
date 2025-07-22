@@ -40,6 +40,10 @@ export function Home() {
     const [itemReject, setItemReject] = useState([])
     const [listReject, setListReject] = useState([])
 
+    const [itemAccept, setItemAccept] = useState([])
+    const [listAccept, setListAccept] = useState([])
+
+
     const [itemDisplay1, setItemDisplay1] = useState([])
     const [itemDisplay2, setItemDisplay2] = useState([])
     const [itemDisplay3, setItemDisplay3] = useState([])
@@ -117,6 +121,7 @@ export function Home() {
         }
     }
 
+
     // Reject Item Request
     useEffect(() => { 
         (async() => {
@@ -179,6 +184,70 @@ export function Home() {
         })()
     }, [listReject])
 
+    
+    // Accept Item Request
+    useEffect(() => { 
+        (async() => {
+
+            if(itemAccept.length !== 0){
+                const data = {itemAccept}
+                const url = "http://127.0.0.1:5000/acceptItem"
+
+                const options = {
+                    credentials: "include",
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                }
+
+                //Communication
+                const response = await fetch(url, options)
+
+                if(response.status !== 201 && response.status !== 200){
+                    const data = await response.json()
+                    alert(data.message)
+                }
+                else{
+                    console.log("Accepted Item: " + JSON.stringify(data))
+                }
+            }
+        })()
+    }, [itemAccept])
+
+    // Accept List Request
+    useEffect(() => { 
+        (async() => {
+
+            if(listAccept.length !== 0){
+                const data = {listAccept}
+                const url = "http://127.0.0.1:5000/acceptList"
+
+                const options = {
+                    credentials: "include",
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                }
+
+                //Communication
+                const response = await fetch(url, options)
+
+                if(response.status !== 201 && response.status !== 200){
+                    const data = await response.json()
+                    alert(data.message)
+                }
+                else{
+                    console.log("Accepted List: " + JSON.stringify(data))
+                }
+            }
+        })()
+    }, [listAccept])
+
+
     function removeItemOption(displayNumber){
         
         if (returnedItem.length === 0){
@@ -215,6 +284,23 @@ export function Home() {
             returnedList.splice(0, 1)
         }
     }
+
+    function acceptItemOption(displayNumber){
+        if (displayNumber === 1){
+            setItemAccept(itemDisplay1)
+        }
+        else if (displayNumber === 2){
+            setItemAccept(itemDisplay2)
+        }
+        else{
+            setItemAccept(itemDisplay3)
+        }
+    }
+
+    function acceptListOption(){
+        setListAccept(listDisplay)
+    }
+
 
     const listGroup = listDisplay.map(option => {
         return (<li className={classes.ml_option_content} key={option[2] /* Key is URL */}>
@@ -263,7 +349,7 @@ export function Home() {
                             <div className={classes.ml_option_top}>
                                 <p>Option 1</p>
                                 <div className={classes.test}>
-                                    <button>Accept</button>
+                                    <button onClick={() => acceptItemOption(1)}>Accept</button>
                                     <button onClick={() => removeItemOption(1)} className={classes.reject_option_button}>Reject</button>
                                 </div>
                             </div>
@@ -279,7 +365,7 @@ export function Home() {
                             <div className={classes.ml_option_top}>
                                 <p>Option 2</p>
                                 <div className={classes.test}>
-                                    <button>Accept</button>
+                                    <button onClick={() => acceptItemOption(2)}>Accept</button>
                                     <button onClick={() => removeItemOption(2)} className={classes.reject_option_button}>Reject</button>
                                 </div>
                             </div>
@@ -295,7 +381,7 @@ export function Home() {
                             <div className={classes.ml_option_top}>
                                 <p>Option 3</p>
                                 <div className={classes.test}>
-                                    <button>Accept</button>
+                                    <button onClick={() => acceptItemOption(3)}>Accept</button>
                                     <button onClick={() => removeItemOption(3)} className={classes.reject_option_button}>Reject</button>
                                 </div>
                             </div>
@@ -335,7 +421,7 @@ export function Home() {
                         <div className={classes.ml_option_top}>
                                 <p>Option</p>
                                 <div className={classes.test}>
-                                    <button>Accept</button>
+                                    <button onClick={() => acceptListOption()}>Accept</button>
                                     <button onClick={() => removeListOption()} className={classes.reject_option_button}>Reject</button>
                                 </div>
                             </div>
