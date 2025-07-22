@@ -1,10 +1,4 @@
-@import url('colors.css');
-
-.line_divider {
-    margin-top: 30px;
-    margin-left: 5px;
-    margin-right: 10px;
-}
+/* Nav for logged in and out */
 
 .loggedin_nav {
     align-items: center;
@@ -39,26 +33,101 @@
         padding: 10px;
     }
 
+
 /* Logged In */
+
+.container_in {
+    margin-top: 20px;
+    margin-bottom: 75px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
 
 .user {
     margin-left: 10px;
-    margin-top: 20px;
+    margin-top: 50px;
     margin-bottom: 50px;
+    font-size: 20px;
+}
+
+.recommender_group_container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.recommender_container {
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    margin: 10px;
+    width: 100%;
+}
+
+    .recommender_container form {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 50px;
+    }
+
+    .ml_inputbox {
+        margin-left: 5px;
+        margin-right: 10px;
+        padding: 5px;
+    }
+
+.recommender_line_divider {
+    margin-left: 10px;
+    margin-right: 10px;
 }
 
 .ml_instructions {
     margin-top: 30px;
-    margin-bottom: 20px;
-}
-
-.ml_inputbox {
-    margin-left: 5px;
-    margin-right: 10px;
+    margin-bottom: 30px;
+    text-align: center;
 }
 
 .ml_option {
-    background-color: var(--background);
+    background-color: var(--background-shade);
+    list-style: none;
+    border-radius: 30px;
+    margin-top: 20px;
+    margin-left: 25px;
+    margin-right: 25px;
+    padding: 5px;
+}
+
+.ml_option_top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 5px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+    .ml_option_top p {
+        justify-content: flex-start;
+        font-size: 20px;
+        font-style: italic;
+        font-weight: bold;
+    }
+
+    .test {
+        justify-content: flex-end;
+    }
+
+    .reject_option_button {
+        margin-left: 10px;
+        background-color: var(--accent-red);
+    }
+
+        .reject_option_button:hover {
+            background-color: var(--accent-red-light);
+        }
+
+.ml_option_content_details {
     border-radius: 15px;
     margin-top: 20px;
     margin-bottom: 20px;
@@ -67,33 +136,33 @@
     padding: 10px;
 }
 
-.ml_output {
-    background-color: var(--background-shade);
-    list-style: none;
-    display: table;
-    border-radius: 30px;
+.ml_option_content {
+    background-color: var(--background);
+    border-radius: 15px;
     margin-top: 20px;
-    padding: 5px;
-    
+    margin-bottom: 10px;
+    margin-left: 5px;
+    margin-right: 5px;
+    padding: 10px;
 }
 
 
 /* Logged Out */
 
-.container {
+.container_out {
     margin-top: 20px;
     margin-bottom: 75px;
     margin-left: 10px;
     margin-right: 10px;
 }
 
-    .container ol {
+    .container_out ol {
         list-style: none;
         margin-top: 20px;
         margin-bottom: 20px;
     }
 
-    .container ol li {
+    .container_out ol li {
         background-color: var(--background-shade);
         margin-top: 50px;
         padding: 50px 20px;

@@ -1,3 +1,12 @@
+:root {
+    --background: #f5e6db;
+    --background-shade: #c0afa2;
+    --accent: #79ef7f;
+    --accent-light: #9cf8a1;
+    --accent-red: #ef7979;
+    --accent-red-light: #f89c9c;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Ubuntu', 'Segoe UI', 'Roboto', 
@@ -27,7 +36,7 @@ button {
         cursor: pointer;
     }
 
-    
+
 a {
     color: blue;
 }
@@ -35,4 +44,3 @@ a {
     a:hover {
         color: rgb(132, 0, 255);
     }
-

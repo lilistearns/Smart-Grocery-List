@@ -16,6 +16,7 @@ export function Home() {
             .then(data => {setEmail(data)})
     }, [])
 
+
     // Send Logout Request
     const logout = async () => {
         const options = {
@@ -31,10 +32,20 @@ export function Home() {
     /* Recommenders */
 
     const [item, setItem] = useState("")
-    const [foundItem, setFoundItem] = useState([])
+    const [returnedItem, setReturnedItem] = useState([])
 
     const [itemList, setItemList] = useState([])
-    const [foundList, setFoundList] = useState([])
+    const [returnedList, setReturnedList] = useState([])
+
+    const [itemReject, setItemReject] = useState([])
+    const [listReject, setListReject] = useState([])
+
+    const [itemDisplay1, setItemDisplay1] = useState([])
+    const [itemDisplay2, setItemDisplay2] = useState([])
+    const [itemDisplay3, setItemDisplay3] = useState([])
+    
+    const [listDisplay, setListDisplay] = useState([])
+
 
     const onSubmitItem = async (e) => {
         //Prevents auto. page reloading
@@ -55,8 +66,6 @@ export function Home() {
         //Communication
         const response = await fetch(url, options)
 
-        console.log("Data: " + JSON.stringify(data))
-
         if(response.status !== 201 && response.status !== 200){
             const data = await response.json()
             alert(data.message)
@@ -64,8 +73,14 @@ export function Home() {
         else{
             const data = await response.json()
             //console.log("Result: " + JSON.stringify(data))
-            setFoundItem(data)
-            
+
+            setItemDisplay1(data[0])
+            setItemDisplay2(data[1])
+            setItemDisplay3(data[2])
+
+            data.splice(0, 3) // remove first three items
+
+            setReturnedItem(data)
         }
     }
 
@@ -88,8 +103,6 @@ export function Home() {
         //Communication
         const response = await fetch(url, options)
 
-        console.log("Data: " + JSON.stringify(data))
-
         if(response.status !== 201 && response.status !== 200){
             const data = await response.json()
             alert(data.message)
@@ -97,92 +110,242 @@ export function Home() {
         else{
             const data = await response.json()
             //console.log("Result: " + JSON.stringify(data))
-            setFoundList(data)
+            setListDisplay(data[0])
+            data.splice(0, 1)
+            
+            setReturnedList(data)
         }
     }
 
-    const itemGroup = foundItem.map(option => {
-        return (<li className={classes.ml_output} key={option[2] /* Key is URL */}> 
-                    <p className={classes.ml_option}>Store: {option[0]}</p>
-                    <p className={classes.ml_option}>Price: {option[1]}</p>
-                    <p className={classes.ml_option}>URL: <a href={option[2]}>Link</a></p>
-                    <p className={classes.ml_option}>Product Name: {option[3]}</p>
-                    <p className={classes.ml_option}>Quantity: {option[4]}</p>
-                </li>)
-    });
+    // Reject Item Request
+    useEffect(() => { 
+        (async() => {
 
-    const listGroup = foundList.map(option => {
-        return (<li className={classes.ml_output} key={option[2] /* Key is URL */}>
-                    <p className={classes.ml_option}>Store: {option[0]}</p>
-                    <p className={classes.ml_option}>Price: {option[1]}</p>
-                    <p className={classes.ml_option}>URL: <a href={option[2]}>Link</a></p>
-                    <p className={classes.ml_option}>Product Name: {option[3]}</p>
-                    <p className={classes.ml_option}>Quantity: {option[4]}</p>
-                </li>)
-    });
+            if(itemReject.length !== 0){
+                const data = {itemReject}
+                const url = "http://127.0.0.1:5000/rejectItem"
 
+                const options = {
+                    credentials: "include",
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                }
 
-    function navigateUpdate(){
-        window.location.href = "/update"
+                //Communication
+                const response = await fetch(url, options)
+
+                if(response.status !== 201 && response.status !== 200){
+                    const data = await response.json()
+                    alert(data.message)
+                }
+                else{
+                    console.log("Rejected Item: " + JSON.stringify(data))
+                }
+            }
+        })()
+    }, [itemReject])
+
+    // Reject List Request
+    useEffect(() => { 
+        (async() => {
+
+            if(listReject.length !== 0){
+                const data = {listReject}
+                const url = "http://127.0.0.1:5000/rejectList"
+
+                const options = {
+                    credentials: "include",
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                }
+
+                //Communication
+                const response = await fetch(url, options)
+
+                if(response.status !== 201 && response.status !== 200){
+                    const data = await response.json()
+                    alert(data.message)
+                }
+                else{
+                    console.log("Rejected List: " + JSON.stringify(data))
+                }
+            }
+        })()
+    }, [listReject])
+
+    function removeItemOption(displayNumber){
+        
+        if (returnedItem.length === 0){
+            alert("No More Options")
+        }
+
+        else{
+            if (displayNumber === 1){
+                setItemReject(itemDisplay1)
+                setItemDisplay1(returnedItem[0])
+            }
+            else if (displayNumber === 2){
+                setItemReject(itemDisplay2)
+                setItemDisplay2(returnedItem[0])
+            }
+            else{
+                setItemReject(itemDisplay3)
+                setItemDisplay3(returnedItem[0])
+            }
+
+            returnedItem.splice(0, 1)
+        }
     }
+
+    function removeListOption(){
+        
+        if (returnedList.length === 0){
+            alert("No More Options")
+        }
+
+        else{
+            setListReject(listDisplay)
+            setListDisplay(returnedList[0])
+            returnedList.splice(0, 1)
+        }
+    }
+
+    const listGroup = listDisplay.map(option => {
+        return (<li className={classes.ml_option_content} key={option[2] /* Key is URL */}>
+                    <p className={classes.ml_option_content_details}>Store: {option[0]}</p>
+                    <p className={classes.ml_option_content_details}>Price: {option[1]}</p>
+                    <p className={classes.ml_option_content_details}>URL: <a href={option[2]}>Link</a></p>
+                    <p className={classes.ml_option_content_details}>Product Name: {option[3]}</p>
+                    <p className={classes.ml_option_content_details}>Quantity: {option[4]}</p>
+                </li>)
+    });
 
 
     // Logged in Home Display
 
     if(email.email != null){
         return (
-            <div className={classes.container}>
+            <div className={classes.container_in}>
                 <nav className={classes.loggedin_nav}>
                     <a href = "/update"><button className={classes.account}>Account</button></a>
-
-                    {/* <button className={classes.account} onClick={navigateUpdate}>Account</button> */}
                     <h1 className={classes.header_title}>Smart Grocery List</h1>
                     <button onClick={logout}>Logout</button>
                 </nav>
 
-                <h3 className={classes.user}>Welcome {email.email}!</h3>
+                <p className={classes.user}>Welcome {email.email}!</p>
 
 
-                {/* Item Search */}
+                <div className={classes.recommender_group_container}>
+                    {/* Item Search */}
+                    
+                    <div className={classes.recommender_container}>
 
-                <h4 className={classes.ml_instructions}>This feature is for a single grocery item. You will recieve three different options. <br></br>Please enter your item.</h4>
+                   
+                    <h4 className={classes.ml_instructions}>This feature is for a single grocery item. <br></br>You will recieve three different options. <br></br><br></br>Please enter your item.</h4>
 
-                <form onSubmit={onSubmitItem}>
-                    <label>
-                        Item Search:
-                        <input className={classes.ml_inputbox} type="text" name="item" value={item} onChange={(e) => setItem(e.target.value)}></input>
-                    </label>
-                <button type="submit">Submit</button>  
-                </form>
+                    <form onSubmit={onSubmitItem}>
+                        <label>
+                            Item Search:
+                            <input className={classes.ml_inputbox} type="text" name="item" value={item} onChange={(e) => setItem(e.target.value)}></input>
+                        </label>
+                    <button type="submit">Submit</button>  
+                    </form>
 
-                {foundItem.length !== 0 &&
-                <ul>
-                    {itemGroup}
-                </ul>
-                }
+                    {(itemDisplay1.length !== 0 || itemDisplay2.length !== 0 || itemDisplay3.length !== 0) &&
+                    <ul>
+                        <li className={classes.ml_option} key={itemDisplay1[2] /* Key is URL */}>
+                            <div className={classes.ml_option_top}>
+                                <p>Option 1</p>
+                                <div className={classes.test}>
+                                    <button>Accept</button>
+                                    <button onClick={() => removeItemOption(1)} className={classes.reject_option_button}>Reject</button>
+                                </div>
+                            </div>
+                            <div className={classes.ml_option_content}>
+                                <p className={classes.ml_option_content_details}>Store: {itemDisplay1[0]}</p>
+                                <p className={classes.ml_option_content_details}>Price: {itemDisplay1[1]}</p>
+                                <p className={classes.ml_option_content_details}>URL: <a href={itemDisplay1[2]}>Link</a></p>
+                                <p className={classes.ml_option_content_details}>Product Name: {itemDisplay1[3]}</p>
+                                <p className={classes.ml_option_content_details}>Quantity: {itemDisplay1[4]}</p>
+                            </div>
+                        </li>
+                        <li className={classes.ml_option} key={itemDisplay2[2] /* Key is URL */}>
+                            <div className={classes.ml_option_top}>
+                                <p>Option 2</p>
+                                <div className={classes.test}>
+                                    <button>Accept</button>
+                                    <button onClick={() => removeItemOption(2)} className={classes.reject_option_button}>Reject</button>
+                                </div>
+                            </div>
+                            <div className={classes.ml_option_content}>
+                                <p className={classes.ml_option_content_details}>Store: {itemDisplay2[0]}</p>
+                                <p className={classes.ml_option_content_details}>Price: {itemDisplay2[1]}</p>
+                                <p className={classes.ml_option_content_details}>URL: <a href={itemDisplay2[2]}>Link</a></p>
+                                <p className={classes.ml_option_content_details}>Product Name: {itemDisplay2[3]}</p>
+                                <p className={classes.ml_option_content_details}>Quantity: {itemDisplay2[4]}</p>
+                            </div>
+                        </li>
+                        <li className={classes.ml_option} key={itemDisplay3[2] /* Key is URL */}>
+                            <div className={classes.ml_option_top}>
+                                <p>Option 3</p>
+                                <div className={classes.test}>
+                                    <button>Accept</button>
+                                    <button onClick={() => removeItemOption(3)} className={classes.reject_option_button}>Reject</button>
+                                </div>
+                            </div>
+                            <div className={classes.ml_option_content}>
+                                <p className={classes.ml_option_content_details}>Store: {itemDisplay3[0]}</p>
+                                <p className={classes.ml_option_content_details}>Price: {itemDisplay3[1]}</p>
+                                <p className={classes.ml_option_content_details}>URL: <a href={itemDisplay3[2]}>Link</a></p>
+                                <p className={classes.ml_option_content_details}>Product Name: {itemDisplay3[3]}</p>
+                                <p className={classes.ml_option_content_details}>Quantity: {itemDisplay3[4]}</p>
+                            </div>
+                        </li>
+                    </ul>
+                    }
+
+                    </div>
 
 
-                <hr className={classes.line_divider}/>
+                    <hr className={classes.recommender_line_divider}/>
 
-                
-                {/* List Search */}
+                    
+                    {/* List Search */}
 
-                <h4 className={classes.ml_instructions}>This feature is for muliple grocery items.  You will recieve one option for each grocery item. <br></br>Please enter your items separated with a comma.</h4>
+                    <div className={classes.recommender_container}>
 
-                <form onSubmit={onSubmitList}>
-                    <label>
-                        List Search:
-                        <input className={classes.ml_inputbox} type="text" name="itemList" value={itemList} onChange={(e) =>{var temp = e.target.value.split(','); setItemList(temp.map(list => list.trim()))}}></input>
-                    </label>
-                <button type="submit">Submit</button>  
-                </form>
+                    <h4 className={classes.ml_instructions}>This feature is for muliple grocery items. <br></br>You will recieve one option with each grocery item. <br></br><br></br>Please enter your items separated with a comma.</h4>
 
-                {foundList.length !== 0 &&
-                <ul>
-                    {listGroup}
-                </ul>
-                }
+                    <form onSubmit={onSubmitList}>
+                        <label>
+                            List Search:
+                            <input className={classes.ml_inputbox} type="text" name="itemList" value={itemList} onChange={(e) =>{var temp = e.target.value.split(','); setItemList(temp.map(list => list.trim()))}}></input>
+                        </label>
+                    <button type="submit">Submit</button>  
+                    </form>
 
+                    {listDisplay.length !== 0 &&
+                    <ul className={classes.ml_option}>
+                        <div className={classes.ml_option_top}>
+                                <p>Option</p>
+                                <div className={classes.test}>
+                                    <button>Accept</button>
+                                    <button onClick={() => removeListOption()} className={classes.reject_option_button}>Reject</button>
+                                </div>
+                            </div>
+                        {listGroup}
+                    </ul>
+                    }
+
+                    </div>
+
+                </div>
             </div>
         );
     }
@@ -191,7 +354,7 @@ export function Home() {
 
     else{
         return (
-            <div className={classes.container}>
+            <div className={classes.container_out}>
                 <nav className={classes.loggedout_nav}>
                     <p className={classes.nav_title}>Smart Grocery List</p>
                     <div className={classes.nav_action}>
