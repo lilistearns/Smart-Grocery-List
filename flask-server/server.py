@@ -59,8 +59,6 @@ def create_user():
         return jsonify({"message": "Sign-up Successful"})
 
 
-from threading import Thread
-
 @app.route("/insertPreferences", methods=["POST"])
 def insertPreferences():
     qual = request.json.get("qual")
