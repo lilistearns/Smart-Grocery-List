@@ -3,7 +3,6 @@ from flask_session import Session # server-side sessions
 from cachelib.file import FileSystemCache # session backend
 from flask_bcrypt import Bcrypt # password hashing
 from flask_cors import CORS
-from threading import Thread
 
 import sys
 sys.path.append("./Data")
@@ -58,9 +57,6 @@ def create_user():
         userFunctions.addUserInfo(name, username, password_hash, email)
         return jsonify({"message": "Sign-up Successful"})
 
-
-from threading import Thread
-
 @app.route("/insertPreferences", methods=["POST"])
 def insertPreferences():
     qual = request.json.get("qual")
@@ -73,7 +69,7 @@ def insertPreferences():
     uid = userFunctions.getUID(email)
 
     userFunctions.insertPreferences(uid, qual, price, quant, size, diet)
-    Thread(target=modelCreator.modelMaker, args=(uid,)).start()
+    modelCreator.modelMaker(uid)
 
     return jsonify({"message": "Preference Creation Successful"})
 
