@@ -15,7 +15,8 @@ export function Preferences() {
         .then(data => {setEmail(data)})
     }, [])
 
-    const [preferencesDone, setPreferencesDone] = useState(false)
+    const [storesDone, setStoresDone] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
 
     // Preferences
     const [qual, setQual] = useState("5")
@@ -45,6 +46,7 @@ export function Preferences() {
             body: JSON.stringify(data)
         }
 
+        setIsLoading(true)
         const response = await fetch(url, options)
 
         if(response.status !== 201 && response.status !== 200){
@@ -52,7 +54,9 @@ export function Preferences() {
             alert(data.message)
         } else {
             console.log("Account Sent: " + JSON.stringify(data))
-            setPreferencesDone(true)
+            setIsLoading(false)
+            window.location.href = "/"
+            
         }
     }
 
@@ -77,14 +81,20 @@ export function Preferences() {
             alert(data.message)
         } else {
             console.log("Stores Sent: " + JSON.stringify(data))
-            window.location.href = "/"
+            setStoresDone(true)
         }
     }
 
     if(email.email != null){
         return(
             <div className={classes.container}>
-                {!preferencesDone &&
+                {isLoading && 
+                <div className={classes.loading_container}>
+                    <p>Getting your account ready <br></br><br></br>One moment...</p>
+                    <div className={classes.loading_icon}></div>
+                </div>
+                }
+                {(storesDone && !isLoading) &&
                 <div>
                     <h2>Please input your preferences:</h2>
                     
@@ -142,7 +152,7 @@ export function Preferences() {
                 </div>
                 }
 
-                {preferencesDone &&
+                {(!storesDone && !isLoading) &&
                 <div>
                     <h2>Choose up to 5 preferred stores:</h2>
                     

@@ -82,3 +82,34 @@
 .stores {
     margin-bottom: 30px;
 }
+
+.loading_container {
+    margin-top: 10%;
+    padding: 50px;
+    border-radius: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+    .loading_container p {
+        margin-bottom: 100px;
+        text-align: center;
+        font-size: 50px;
+    }
+
+.loading_icon {
+  width: 75px;
+  height: 75px;
+  border: 10px solid var(--accent);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: loading_animation 1s infinite linear;
+}
+
+    @keyframes loading_animation {
+    to {
+        transform: rotate(360deg);
+    }
+    }
