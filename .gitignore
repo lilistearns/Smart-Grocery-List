@@ -28,10 +28,8 @@ flask_session/
 __pycache__/
 ML/item_obselete.py
 ML/list.py
-bigy_page.html
-hannaford_page.html
 starmarket.html
-starmarket2.html
-starmarket3.html
-walmarttest.json
 Data/webScraping/selenium test
+Data/initialTraining
+Data/filtered
+Data/scrapingLibrary
