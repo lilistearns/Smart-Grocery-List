@@ -1,5 +1,9 @@
 import mysql.connector
 import sys
+import json
+import os
+import re
+
 
 def db():
     try:
@@ -309,3 +313,169 @@ def getUID(email):
         return None
     finally:
         connection.close()
+
+def appendJson(filename, newData):
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
+    if os.path.exists(filename):
+        with open(filename, "r") as f:
+            try:
+                existingData = json.load(f)
+                if not isinstance(existingData, list):
+                    existingData = [existingData]
+            except json.JSONDecodeError:
+                existingData = []
+    else:
+        existingData = []
+    new_items = newData if isinstance(newData, list) else [newData]
+
+
+    existing_urls = {item.get("url"): item for item in existingData if "url" in item}
+    for item in new_items:
+        existing_urls[item["url"]] = item  
+
+    with open(filename, "w") as f:
+        json.dump(list(existing_urls.values()), f, indent=2)
+
+def acceptItem(item, uid):
+    filename = f"./UserData/{uid}/Accepted/acceptedItems.json"
+    cartname = f"./UserData/{uid}/cart.json"
+    item_dict = {
+        "store": item[0],
+        "price": item[1],
+        "url": item[2],
+        "productName": item[3],
+        "quantity": item[4]
+    }
+    appendJson(filename, item_dict)
+    appendJson(cartname,item_dict)
+    print(f"Appended item to {filename}")
+
+def rejectItem(item, uid):
+    filename = f"./UserData/{uid}/Rejected/rejectedItems.json"
+    item_dict = {
+        "store": item[0],
+        "price": item[1],
+        "url": item[2],
+        "productName": item[3],
+        "quantity": item[4]
+    }
+    appendJson(filename, item_dict)
+    print(f"Appended item to {filename}")
+
+def acceptList(itemlist, uid):
+    filename = f"./UserData/{uid}/Accepted/acceptedItems.json"
+    cartname = f"./UserData/{uid}/cart.json"
+    items = []
+    for item in itemlist:
+        item_dict = {
+            "store": item[0],
+            "price": item[1],
+            "url": item[2],
+            "productName": item[3],
+            "quantity": item[4]
+        }
+        items.append(item_dict)
+
+    appendJson(filename, items)
+    appendJson(cartname,item_dict)
+
+    directory = f"./UserData/{uid}/Accepted/"
+    saveListRecommendation(itemlist, uid, directory)
+    print(f"Appended {len(items)} items to {filename}")
+
+def rejectList(itemlist, uid):
+    directory = f"./UserData/{uid}/Rejected/"
+    saveListRecommendation(itemlist, uid, directory)
+
+def saveListRecommendation(itemlist, uid, directory):
+    os.makedirs(directory, exist_ok=True)
+
+    existing = [
+        f for f in os.listdir(directory)
+        if f.startswith(f"list-") and f.endswith(".json")
+    ]
+    numbers = []
+    for f in existing:
+        try:
+            num = int(f.split("list-")[1].split(".json")[0])
+            numbers.append(num)
+        except ValueError:
+            continue
+
+    nextNum = max(numbers, default=0) + 1
+    filename = f"list-{nextNum}.json"
+    filepath = os.path.join(directory, filename)
+
+    with open(filepath, "w", encoding="utf-8") as f:
+        json.dump(itemlist, f, indent=2)
+
+    print(f"Saved list to {filepath}")
+
+def getMax(directory):
+    pattern = re.compile(r"list-(\d+)\.json$")
+    numbers = []
+
+    for filename in os.listdir(directory):
+        match = pattern.match(filename)
+        if match:
+            numbers.append(int(match.group(1)))
+
+    return max(numbers) if numbers else None
+
+def getPastList(listNumber, uid, directory):
+    directoryPath = f"./UserData/{uid}/{directory}"
+    pageMax = getMax(directoryPath)
+    num = pageMax-listNumber
+    if(num<=0):
+        return "No More Lists"
+    directoryPath = f"./UserData/{uid}/{directory}"
+    fullPath = f"{directoryPath}/list-{num}.json"
+
+    with open(fullPath, "r") as f:
+        data = json.load(f)  
+
+
+    pastList= [tuple(item) for item in data]
+
+    return pastList
+
+def getCart(uid):
+    with open(f"./UserData/{uid}/cart.json", "r") as f:
+        data = json.load(f)  
+
+    cart= [tuple(item) for item in data]
+
+    return cart
+
+def getCartSize(uid):
+    with open(f"./UserData/{uid}/cart.json", "r") as f:
+        data = json.load(f)  
+    x = 0
+    for item in data:
+        x+=1
+    return x
+
+def getModel(qual, price, quant):
+    # Ensure numeric input
+    qual = float(qual)
+    price = float(price)
+    quant = float(quant)
+
+    weights = {
+        'quality': qual,
+        'price': price,
+        'quantity': quant
+    }
+
+    if max(weights.values()) - min(weights.values()) < 0.1:
+        return 'balanced'
+
+    if qual >= 0.8 and price <= 0.4:
+        return 'premium'
+    elif price >= 0.8 and qual <= 0.5:
+        return 'budget'
+    elif quant >= 0.8:
+        return 'bulk'
+    
+    dominant = max(weights, key=weights.get)
+    return dominant

@@ -4,14 +4,14 @@ from cachelib.file import FileSystemCache # session backend
 from flask_bcrypt import Bcrypt # password hashing
 from flask_cors import CORS
 from threading import Thread
-
+import os 
 import sys
 sys.path.append("./Data")
 import userFunctions
 sys.path.append("./ML")
 import item
 import modelCreator
-
+import shutil
 
 # Initializations
 app = Flask(__name__)
@@ -71,9 +71,11 @@ def insertPreferences():
 
     email = session.get("email")
     uid = userFunctions.getUID(email)
-
+    dest_dir = f"UserData/{uid}"
+    os.makedirs(dest_dir, exist_ok=True)
     userFunctions.insertPreferences(uid, qual, price, quant, size, diet)
-    Thread(target=modelCreator.modelMaker, args=(uid,)).start()
+    modelName = userFunctions.getModel(qual,price,quant)
+    shutil.copy(f"TrainedModels/{modelName}.h5", f"UserData/{uid}/model-{uid}.h5")
 
     return jsonify({"message": "Preference Creation Successful"})
 
@@ -175,7 +177,7 @@ def findItem():
 
     #NEW OUTPUT: [("Shaw's", 3.69, 'https://www.shaws.com/shop/product-details/970038173', 'Hood Whole Milk - 64 Oz', 'GAL HG'), ('Star Market', 3.69, 'https://www.starmarket.com/shop/product-details/970038173', 'Hood Whole Milk - 64 Oz', 'GAL HG'), ("Shaw's", 2.69, 'https://www.shaws.com/shop/product-details/136010013', 'Lucerne Milk - Half Gallon (container may vary)', 'GAL HG'), ('Star Market', 2.69, 'https://www.starmarket.com/shop/product-details/136010013', 'Lucerne Milk - Half Gallon (container may vary)', 'GAL HG'), ('Star Market', 2.69, 'https://www.starmarket.com/shop/product-details/136010016', 'Lucerne Milk Reduced Fat 2% Milkfat - 64 Fl. Oz. (package may vary)', 'GAL HG'), ("Shaw's", 2.69, 'https://www.shaws.com/shop/product-details/136010016', 'Lucerne Milk Reduced Fat 2% Milkfat - 64 Fl. Oz. (package may vary)', 'GAL HG'), ('Star Market', 6.99, 'https://www.starmarket.com/shop/product-details/136050129', 'Lactaid Whole Milk - 96 Oz', 'GAL. FZ'), ("Shaw's", 6.99, 'https://www.shaws.com/shop/product-details/136050129', 'Lactaid Whole Milk - 96 Oz', 'GAL. FZ'), ("Shaw's", 3.99, 'https://www.shaws.com/shop/product-details/136010449', 'Lucerne Milk Lowfat 1% Milkfat 1 Gallon - 128 Fl. Oz.', 'GAL. GA'), ('Star Market', 3.99, 'https://www.starmarket.com/shop/product-details/136010121', 'Lucerne Milk Whole 1 Gallon - 128 Fl. Oz.', 'GAL. GA')]
 
-    
+
 @app.route("/findList", methods=["POST"])
 def findList():
     inputList = request.json.get("itemList")
@@ -190,34 +192,56 @@ def findList():
 
 @app.route("/acceptItem", methods=["POST"])
 def acceptItem():
-    goodItem = request.json.get("item")
+    goodItem = request.json.get("itemAccept")
     email = session.get("email")
     uid = userFunctions.getUID(email)
-    userFunctions.saveItem(goodItem,uid)
-
-
+    userFunctions.acceptItem(goodItem,uid)
+    return jsonify({"message": "Item Accepted"}), 200
 
 @app.route("/acceptList", methods=["POST"])
 def acceptList():
-    goodList = request.json.get("list")
+    goodList = request.json.get("listAccept")
     email = session.get("email")
     uid = userFunctions.getUID(email)
-    userFunctions.saveList(goodList,uid)
+    userFunctions.acceptList(goodList,uid)
+    return jsonify({"message": "List Accepted"}), 200
 
 @app.route("/rejectItem", methods=["POST"])
 def rejectItem():
-    badItem = request.json.get("item")
+    badItem = request.json.get("itemReject")
     email = session.get("email")
+    print(badItem)
     uid = userFunctions.getUID(email)
     userFunctions.rejectItem(badItem,uid)
-
+    return jsonify({"message": "Item rejected"}), 200
 
 @app.route("/rejectList", methods=["POST"])
 def rejectList():
-    badList= request.json.get("list")
+    badList= request.json.get("listReject")
     email = session.get("email")
     uid = userFunctions.getUID(email)
     userFunctions.rejectList(badList,uid)
+    return jsonify({"message": "List rejected"}), 200
+
+@app.route("/getPastList", methods=["POST"])
+def getPastList():
+    pageNumber = request.json.get("pageNumber")
+    email = session.get("email")
+    uid = userFunctions.getUID(email)
+    return userFunctions.getPastList(pageNumber,uid)
+
+@app.route("/getCart", methods=["POST"])
+def getCart():
+    email = session.get("email")
+    uid = userFunctions.getUID(email)
+    return userFunctions.getCart(uid)
+
+@app.route("/getCartSize", methods=["POST"])
+def getCartSize():
+    email = session.get("email")
+    uid = userFunctions.getUID(email)
+    return userFunctions.getCartSize(uid)
+
 
 if __name__ == '__main__':
     app.run(debug=True)

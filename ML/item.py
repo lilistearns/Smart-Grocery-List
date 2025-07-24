@@ -83,27 +83,7 @@ def quantityNormalizer(data):
     return float(normalizedQuantity)
 
 
-def saveListRecommendation(list, uid):
-    directory = f"./UserData/{uid}/"
-    existing = [
-        f for f in os.listdir(directory)
-        if f.startswith(f"{uid}-list-") and f.endswith(".json")
-    ]
-    numbers = []
-    for f in existing:
-        try:
-            num = int(f.split("-list-")[1].split(".json")[0])
-            numbers.append(num)
-        except ValueError:
-            continue
-    nextNum = max(numbers, default=0) + 1
-    filename = f"{uid}-list-{nextNum}.json"
-    filepath = os.path.join(directory, filename)
 
-    with open(filepath, "w", encoding="utf-8") as f:
-        json.dump(list, f, indent=2)
-
-    print(f"Saved list to {filepath}")
 
 def dbQuery():
     connection = mysql.connector.connect(
@@ -184,7 +164,7 @@ def recommender(data, model, pricePercent, qualityPercent, quantityPercent):
         input["qualPercent"] = qualityPercent 
         input["quantPercent"] = quantityPercent 
 
-    data["score"] = model.predict(input)
+    data["score"] = model.predict(input)[:, 0]
     return data.sort_values("score", ascending=False)
 
 def bestList(data, model, pricePercent, qualityPercent, quantityPercent, original_item_list):
@@ -265,7 +245,7 @@ def itemRecommender(item, uid):
     )
 
     predicted = recommendations.head(10).index
-
+    print(recommendations.head(10))
     itemsR = list(
         originalData.loc[predicted, ["store", "price", "URL", "productName", "quantity"]]
         .itertuples(index=False, name=None)
@@ -317,9 +297,7 @@ def listRecommender(itemList, uid):
             .itertuples(index=False, name=None)
         )
         results.append(item_set)
-
     return results
 
-#listItem = itemRecommender("Milk",3)
+#listItem = itemRecommender("Eggs",3)
 #print(listItem)
-#saveListRecommendation(listItem,3)

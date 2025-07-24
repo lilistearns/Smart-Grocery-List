@@ -6,7 +6,7 @@ import pandas as pd
 import json
 import os
 import sys
-
+import re
 tf.config.run_functions_eagerly(True)
 
 def normalizer(data):
@@ -75,14 +75,84 @@ def dataRetrieval(jsonFile, uid):
 
     return np.array(X), np.array(Y)
 
+def loadUserLabeledData(uid):
+    accepted_path = f"./UserData/{uid}/Accepted/acceptedItems.json"
+    rejected_path = f"./UserData/{uid}/Rejected/rejectedItems.json"
+
+    data = []
+
+    if os.path.exists(accepted_path):
+        with open(accepted_path, "r") as f:
+            accepted = json.load(f)
+            if isinstance(accepted, dict):
+                accepted = [accepted]
+            for item in accepted:
+                item["rating"] = 1
+                data.append(item)
+
+    if os.path.exists(rejected_path):
+        with open(rejected_path, "r") as f:
+            rejected = json.load(f)
+            if isinstance(rejected, dict):
+                rejected = [rejected]
+            for item in rejected:
+                item["rating"] = 0
+                data.append(item)
+
+    return data
+
+def quantityNormalizer(data):
+    data = str(data)
+    match = re.search(r'(\d+(?:\.\d+)?)\s*(.+)', data)
+    if not match:
+        number = 1.0
+        unit = data
+    else:
+        number = float(match.group(1))
+        unit = match.group(2).strip().lower()
+
+    if unit in ['gallon', 'gal', 'Gallon', 'Gal']:
+        normalizedQuantity = number * 128
+    elif unit in ['half gallon', 'half gal', 'Half Gallon', 'Half Gal']:
+        normalizedQuantity = number * 64
+    elif unit in ['quart', 'qt']:
+        normalizedQuantity = number * 32
+    elif unit in ['pint', 'pt']:
+        normalizedQuantity = number * 16
+    elif unit in ['liter', 'l']:
+        normalizedQuantity = number * 33.814
+    elif unit in ['ml', 'milliliter']:
+        normalizedQuantity = number * 0.033814
+    elif unit in ['fl oz', 'oz'] and 'fl' in data.lower():
+        normalizedQuantity = number
+    elif unit in ['lb', 'lbs', 'pound', 'pounds']:
+        normalizedQuantity = number * 16
+    elif unit in ['kg', 'kilogram', 'kilograms']:
+        normalizedQuantity = number * 35.274
+    elif unit in ['g', 'gram', 'grams']:
+        normalizedQuantity = number * 0.035274
+    elif unit in ['oz', 'ounce', 'ounces'] and 'fl' not in data.lower():
+        normalizedQuantity = number
+    elif unit in ['count', 'ct', 'pieces', 'pcs', 'each', 'ea', 'items', 'item']:
+        normalizedQuantity = number
+    elif unit in ['dozen', 'doz']:
+        normalizedQuantity = number * 12
+    elif unit in ['pair', 'pairs']:
+        normalizedQuantity = number * 2
+
+    elif unit in ['pack', 'pk', 'package', 'packages', 'box', 'boxes', 'bag', 'bags']:
+        normalizedQuantity = number
+    else:
+        normalizedQuantity = number
+    
+    return float(normalizedQuantity)
+
 def modelMaker(uid):
     user_dir = f"/home/comp5500/git/Smart-Grocery-List/UserData/{uid}"
     os.makedirs(user_dir, exist_ok=True)
 
-    jsonPath = f"{user_dir}/SampleData-{uid}.json"
     modelPath = f"{user_dir}/model-{uid}.h5"
 
-    # Connect and get user preferences
     conn = mysql.connector.connect(
         host="localhost",
         user="comp5500",
@@ -99,8 +169,13 @@ def modelMaker(uid):
     cursor.close()
     conn.close()
 
-    if not os.path.exists(jsonPath):
-        print(f"No sample data found for UID {uid}. Training minimal model with only preference scores.")
+    if not pref:
+        raise ValueError(f"No preferences found for UID {uid}")
+
+    labeled_data = loadUserLabeledData(uid)
+
+    if not labeled_data:
+        print(f"No user feedback found for UID {uid}. Training minimal model using preferences.")
         x = np.array([[pref["quantPercent"], pref["qualPercent"], pref["pricePercent"]]])
         y = np.array([(pref["quantPercent"] + pref["qualPercent"] + pref["pricePercent"]) / 3])
 
@@ -117,50 +192,27 @@ def modelMaker(uid):
         print(f"Minimal model trained and saved to {modelPath}")
         return
 
-    
-    X, Y = dataRetrieval(jsonPath, uid)
-    df = pd.DataFrame(X, columns=[
-        "price", "quantity", "quality",
-        "pricePercent", "qualPercent", "quantPercent"
+    for item in labeled_data:
+        item["pricePercent"] = pref["pricePercent"]
+        item["qualPercent"] = pref["qualPercent"]
+        item["quantPercent"] = pref["quantPercent"]
+
+    df = pd.DataFrame(labeled_data)
+    df["quantity"] = df["quantity"].apply(quantityNormalizer)
+    df["quality"] = df.get("quality", 1)  
+
+    df = normalizer(df)
+
+    X = df[["inv_price", "quantity", "quality", "pricePercent", "qualPercent", "quantPercent"]].values
+    Y = np.array(df["rating"])
+
+    model = tf.keras.Sequential([
+        tf.keras.layers.Input(shape=(6,)),
+        tf.keras.layers.Dense(16, activation="relu"),
+        tf.keras.layers.Dense(1, activation="sigmoid")
     ])
-    data = normalizer(df)
-    X_norm = data[["inv_price", "quantity", "quality", "pricePercent", "qualPercent", "quantPercent"]].values
-
-    if os.path.exists(modelPath):
-        print(f"Model already exists for UID {uid}")
-        model = tf.keras.models.load_model(modelPath)
-
-        expected_input_shape = model.input_shape[-1]
-        new_input_shape = X_norm.shape[1]
-
-        if expected_input_shape != new_input_shape:
-            print(f"Input shape changed from {expected_input_shape} to {new_input_shape}, retraining full model.")
-            model = tf.keras.Sequential([
-                tf.keras.layers.Input(shape=(new_input_shape,)),
-                tf.keras.layers.Dense(16, activation="relu"),
-                tf.keras.layers.Dense(1, activation="sigmoid")
-            ])
-        else:
-            print("Updating existing model...")
-
-    else:
-        print(f"Creating full model for UID {uid}")
-        model = tf.keras.Sequential([
-            tf.keras.layers.Input(shape=(6,)),
-            tf.keras.layers.Dense(16, activation="relu"),
-            tf.keras.layers.Dense(1, activation="sigmoid")
-        ])
 
     model.compile(optimizer='adam', loss=tf.keras.losses.MeanSquaredError())
-    model.fit(X_norm, Y, epochs=100, verbose=1)
+    model.fit(X, Y, epochs=100, verbose=1)
     model.save(modelPath)
-    print(f"Full model saved to {modelPath}")
-
-
-if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Usage: modelCreator.py <uid>")
-    else:
-        uid = sys.argv[1]
-        modelMaker(uid)
-        dbQuery()
+    print(f"Full model trained and saved to {modelPath}")

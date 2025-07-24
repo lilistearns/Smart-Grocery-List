@@ -158,7 +158,7 @@ def starmarket(itemList, num):
         "ocp-apim-subscription-key": "5e790236c84e46338f4290aa1050cdd4",
     }
 
-    token = "3:AkNW6Th9+xZRRsqyVy200Q==:1BULnwdB05ImrLl2nbZnCraY77/d31Ai3han9u2pmKiiIEZiFILYQ3SrydCUgmAMUwIuytCq1mnlmFSaMNiyrtbe3sP7Bxcu5SunjKCUeIuaMIIgl/60J8C+Ox+bwdW33N6RHEdK7ZfqReQ+xaNvlV8zq9wWaHk4S6Uo8LUufRZvP6rjjOcStgMPLPLKXMK+UcqjPFLjrFqQ5Uv1+hmi4ZfqzLjPMO71ukKAWT+IYoTt58mytrE77rLIgGHdwWWUaNwHuWO4q3nBGBtigDNELX5AQ3WRJYTuLc0xZclnPo/1u+O3mBU40tVWo+3dtcbS22stRr+v1mRVMPwEkeAj+teX98tcatTdDEarrxV6A3syEj2FvCKzauMzhTDW8pbn47TbgGwmhSeN1iMZhf6oYSJiXePxdatIPnrhXQM+pAUY/jSezOuBT3Sz+JEyuuMy0x6D3drfBNydKNlN6Y0gZGH5APNyG/0X/GwIoacrDh+vqSqon+zzlCbkusKp1y4exqxU/OofIakko7nIMVZA9rHq8jUwR3Dqnen6w3Jz2MI=:lntSjMFSPd5xte3gZY9PsNu16+m3bgHc0bfaxuOzpFY="
+    token = "3:2YqTR4dYx12UoTwb/C1ixg==:t8equYb8FAeXFxf0iKiHPuQc/uBg/dtE5xYK71i1OrEC1unIvEWknuwkAyBLg6bXwpAALelE05BxgUBJI70b/loq1WAMnknIT7bTEFcLVWHxPjrWwGU5basborYDtuxljiXJg7jRh0p5Q0G5IrUVxOEP6Z56ZnFviAOM3QQLeHrRvbwdZ/FIqwXv2p1rxRDptXU3tZTkMn9L+OesHGHngfpOVmJI8f68hDnVrvcFyYkyy0Ma9pYuSWMTt6jxYFuSBvKPnXRc6+H8KzLCpdW3Fg1M4FOEFdZKG3sgJYqA2sHBCiFEr8+fvZA+IZGv1w56UZw2hVE0P/nh6RPYPL2pGw9v5naOId3EXhPlKVMBxa18UOyABlI3thKCT3wTY458aOwTFJfpZcCXOtbcfX1KU+iJQe5uyBANAcyG0jIbAG3WSgSs8suFTAxtRKHtfT8bQvjca8HCL5pMc8i2+X+g1sMXA8N27G4dsFRHErAhwPv1H5ERR5JN9d9WPijDuvE+:ej0HFRbYv2B+mCurat8sfhz0jhm9BJioh97m2KaxvJI="
     cookies = {
         "reese84": token
     }
@@ -171,7 +171,7 @@ def starmarket(itemList, num):
         requestID = math.floor(1e13 * random.random())
         requestID = f"{requestID}"
         params = {
-            "request-id": "1791753108631432745",
+            "request-id": "1981753372431703270",
             "url": "https://www.starmarket.com",
             "pageurl": "https://www.starmarket.com",
             "pagename": "search",
@@ -212,7 +212,7 @@ def starmarket(itemList, num):
                 rating = float(review.get("avgRating", 0.0))
                 quality = rating / 5.0 if rating else 0.75
 
-                itemURL = f"https://www.starmarket.com/shop/product-details/{product.get('pid')}"
+                itemURL = f"https://www.starmarket.com/shop/product-details.{product.get('pid')}.html"
 
                 rows.append({
                     "item": itemName,
@@ -243,7 +243,7 @@ def shaws(itemList, num):
         "ocp-apim-subscription-key": "5e790236c84e46338f4290aa1050cdd4",
     }
 
-    token = "3:hULRsIknrFIWj+XeFETIpA==:wCiij3fKVR7FnIKPsXsB8T5KVGJvYSAOcJCVZqhGlbxrr66jLw+fKO8RBsZI/k1e7ygxjUhbq3voWryzrUYyvHuyfUATMVLOYHIYGURUnYOiOpveXs+s9maBY5/R2bzv4RBFkdiySuNk/RIIOXJK+/hNbvd31Iy7I0TDiTX/M4kruqK6Ggrn49dNESJfc2R/GH1l/OV7/kJmDerG/uL6sZHA70717LSgmH8+vPbaVeL/PPe3A2YG9llbZExfF/azRJ7/tEFs92GIfKKTQRHn2wifmMd1H6tJYZvU9genAH97ueZ25RDjSWOIdfR8ZIGhD4Kinh4PafY7E4bhORLwxv3h7was44Pf97RrSrFi8bpeqTO6RcUN99QzYfFHL4JdiSdaOG5nwu0ondfLqkxHYUrs7f+D9a0X8pwq2FKhGhwzLtbJ5I8AopK1K0TjzrH6qLF43sna2+Tb1q1ydgjCqCqmGrzDRnsZKqDcFPZJZDTwBcViMvjsTDqWosekZ58sqaksmuhlZ32ohxO/EZXOHzIw43Sqqs/ZdkgaX6qHxbk=:ECecNzGCrZSYzcRn6lJCkB6C7YvI/IUpK/6y1j7aH7c="
+    token = "3:T8xiuy3NN0SqUklXMIEATQ==:x7VDwktkBjzy1KHwKXcEKHwSSkPF08FohS9MzWwoptbYdueem1FQpJGpAzSKlclHvw3cnRDKu14NXlFKxSNZ/gY9/oriA1ZYY3DDyApP1R/eatsxvJ7r/tmHl6PXEotmnONr2CzHS6voFSiVFyoreY7CIbKnSM0r+ZSYRuatnwEBba962kGwJbeYvIWTn3Bl8CozchyGTx7nxBsOHjG9pw69e5mS2cjcyV2TY7XJI64JCalkwFocUwdPd9A3hnz1foLZIXdwcIDHuZw5jidM/4iKTKgZcN/8y6RV6HoUQAJLf5BOQVgXhJNlf9oHPN5WZ1ql9tFnWpQy9PMtIi8k8T/5TleMIo44/XmjHJYa/THO4ZxcV8YYR2eVVAKu3D3FKjxrmDsh2PSsnHtRzH9NuTswQ7XQk7hD+hDsV5YTYkauvrHymyiqcgucGFi6Lc+yRpclObIyGe/laRL9vf6vF8oIi7Ail8oIHU9uirnBUnYucXkHMfaim6lQloCn8gglG+PCqL8IMr0m3MFYKLVLMS0wgc3ZVHyDJEueiLFCkoc=:8BoWihpqJzPtsV0+qtKaE9O3ZpXeCPkeoTUfht5COz8="
     cookies = {
         "reese84": token
     }
@@ -256,7 +256,7 @@ def shaws(itemList, num):
         requestID = math.floor(1e13 * random.random())
         requestID = f"{requestID}"
         params = {
-            "request-id": "7361753108651798413",
+            "request-id": "9781753217824066194",
             "url": "https://www.shaws.com",
             "pageurl": "https://www.shaws.com",
             "pagename": "search",
@@ -297,7 +297,7 @@ def shaws(itemList, num):
                 rating = float(review.get("avgRating", 0.0))
                 quality = rating / 5.0 if rating else 0.75
 
-                itemURL = f"https://www.shaws.com/shop/product-details/{product.get('pid')}"
+                itemURL = f"https://www.shaws.com/shop/product-details.{product.get('pid')}.html"
 
                 rows.append({
                     "item": itemName,
