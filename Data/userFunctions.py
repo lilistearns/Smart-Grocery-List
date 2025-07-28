@@ -3,23 +3,12 @@ import sys
 import json
 import os
 import re
-
-
-def db():
-    try:
-        return mysql.connector.connect(
-            host="localhost",
-            user="comp5500",
-            password="1qaz2wsx!QAZ@WSX",
-            database="listBase"
-        )
-    except mysql.connector.Error as err:
-        print(f"DB connection error: {err}")
-        return None
+import sys
+import dataFunctions
 
 # userInfoCreation
 def addUserInfo(name, username, password, email):
-    connection = db()
+    connection = dataFunctions.dbConnect()
     if not connection:
         return None
     connector = connection.cursor()
@@ -42,7 +31,7 @@ def addUserInfo(name, username, password, email):
 
 # creates User Preferences
 def insertPreferences(uid, qual, price, quant, size, diet):
-    connection = db()
+    connection = dataFunctions.dbConnect()
     if not connection:
         return
     connector = connection.cursor()
@@ -62,7 +51,7 @@ def insertPreferences(uid, qual, price, quant, size, diet):
 
 #update prefernces
 def updatePreferences(uid, qual, price, quant):
-    connection = db()
+    connection = dataFunctions.dbConnect()
     if not connection:
         return
     connector = connection.cursor()
@@ -83,7 +72,7 @@ def updatePreferences(uid, qual, price, quant):
 
 # update shopping size
 def updateShoppingSize(uid, size):
-    connection = db()
+    connection = dataFunctions.dbConnect()
     if not connection:
         return
     connector = connection.cursor()
@@ -104,7 +93,7 @@ def updateShoppingSize(uid, size):
 
 # updates diet
 def updateDiet(uid, diet):
-    connection = db()
+    connection = dataFunctions.dbConnect()
     if not connection:
         return
     connector = connection.cursor()
@@ -125,7 +114,7 @@ def updateDiet(uid, diet):
 
 # storesUpdater
 def updateStores(uid, storeIDs):
-    connection = db()
+    connection = dataFunctions.dbConnect()
     if not connection:
         return
     connector = connection.cursor()
@@ -158,7 +147,7 @@ def updateStores(uid, storeIDs):
 
 #insertStores
 def insertStores(uid, storeIDs):
-    connection = db()
+    connection = dataFunctions.dbConnect()
     if not connection:
         return
     cursor = connection.cursor()
@@ -184,7 +173,7 @@ def insertStores(uid, storeIDs):
 
 
 def getStoreIDs(stores):
-    connection = db()
+    connection = dataFunctions.dbConnect()
     if not connection:
         return [0] * len(stores)
     cursor = connection.cursor()
@@ -216,7 +205,7 @@ def getStoreIDs(stores):
 
 # usernameChanger
 def updateUserName(uid, new_name):
-    connection = db()
+    connection = dataFunctions.dbConnect()
     if not connection:
         return
     connector = connection.cursor()
@@ -237,7 +226,7 @@ def updateUserName(uid, new_name):
 
 # emailChanger
 def updateUserEmail(uid, new_email):
-    connection = db()
+    connection = dataFunctions.dbConnect()
     if not connection:
         return
     connector = connection.cursor()
@@ -258,7 +247,7 @@ def updateUserEmail(uid, new_email):
 
 # passwordChanger
 def updateUserPassword(uid, new_password):
-    connection = db()
+    connection = dataFunctions.dbConnect()
     if not connection:
         return
     connector = connection.cursor()
@@ -279,7 +268,7 @@ def updateUserPassword(uid, new_password):
 
 #logs user in returns boolean
 def userLogin(username, password):
-    connection = db()
+    connection = dataFunctions.dbConnect()
     if not connection:
         return None
     connector = connection.cursor()
@@ -292,7 +281,7 @@ def userLogin(username, password):
         result = connector.fetchone()
         return result[0] if result else None
     except mysql.connector.Error as err:
-        print(f"DB error: {err}")
+        print(f"dataFunctions.dbConnect() error: {err}")
         return "Wrong Username"
     finally:
         connector.close()
@@ -300,7 +289,7 @@ def userLogin(username, password):
 
 #retrieves uid
 def getUID(email):
-    connection = db()
+    connection = dataFunctions.dbConnect()
     if not connection:
         return None
     connector = connection.cursor()
@@ -309,7 +298,7 @@ def getUID(email):
         result = connector.fetchone()
         return result[0] if result else None
     except mysql.connector.Error as err:
-        print(f"DB error: {err}")
+        print(f"dataFunctions.dbConnect() error: {err}")
         return None
     finally:
         connection.close()
@@ -456,7 +445,6 @@ def getCartSize(uid):
     return x
 
 def getModel(qual, price, quant):
-    # Ensure numeric input
     qual = float(qual)
     price = float(price)
     quant = float(quant)

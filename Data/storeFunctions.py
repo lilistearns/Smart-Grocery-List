@@ -1,20 +1,9 @@
 import mysql.connector
 import sys
-
-def db():
-    try:
-        return mysql.connector.connect(
-            host="localhost",
-            user="comp5500",
-            password="1qaz2wsx!QAZ@WSX",
-            database="listBase"
-        )
-    except mysql.connector.Error as err:
-        print(f"DB connection error: {err}")
-        return None
+import dataFunctions
 
 def addOrUpdateStore(storeAddress, storeName, qualRating, priceRating, quantRating):
-    connection = db()
+    connection = dataFunctions.dbConnect()()
     if not connection:
         return
     connector = connection.cursor()

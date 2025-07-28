@@ -1,15 +1,12 @@
 import os
 import warnings
 from concurrent.futures import ThreadPoolExecutor, as_completed
-
-
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'  
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
-
 warnings.filterwarnings('ignore')
 warnings.filterwarnings('ignore', category=DeprecationWarning)
-from sklearn.preprocessing import MinMaxScaler
+
 import tensorflow as tf
 tf.get_logger().setLevel('ERROR')
 tf.autograph.set_verbosity(0)
@@ -22,135 +19,14 @@ import mysql.connector
 import sys
 import re
 import json
-sys.path.append("./Data/webScraping")
-import webscraper
+sys.path.append("./Data")
+import dataFunctions
+import webscrapingFunctions
+
 tf.config.run_functions_eagerly(True)
 
-def normalizer(data):
-    data = data.copy()
-    data["inv_price"] = 1 / data["price"]
-    scaler = MinMaxScaler()
-    data[["inv_price", "quantity", "quality"]] = scaler.fit_transform(
-        data[["inv_price", "quantity", "quality"]]
-    )
-    return data
-
-def quantityNormalizer(data):
-    data = str(data)
-    match = re.search(r'(\d+(?:\.\d+)?)\s*(.+)', data)
-    if not match:
-        number = 1.0
-        unit = data
-    else:
-        number = float(match.group(1))
-        unit = match.group(2).strip().lower()
-
-    
-    if unit in ['gallon', 'gal', 'Gallon', 'Gal']:
-        normalizedQuantity = number * 128
-    elif unit in ['half gallon', 'half gal', 'Half Gallon', 'Half Gal']:
-        normalizedQuantity = number * 64
-    elif unit in ['quart', 'qt']:
-        normalizedQuantity = number * 32
-    elif unit in ['pint', 'pt']:
-        normalizedQuantity = number * 16
-    elif unit in ['liter', 'l']:
-        normalizedQuantity = number * 33.814
-    elif unit in ['ml', 'milliliter']:
-        normalizedQuantity = number * 0.033814
-    elif unit in ['fl oz', 'oz'] and 'fl' in data.lower():
-        normalizedQuantity = number
-    elif unit in ['lb', 'lbs', 'pound', 'pounds']:
-        normalizedQuantity = number * 16
-    elif unit in ['kg', 'kilogram', 'kilograms']:
-        normalizedQuantity = number * 35.274
-    elif unit in ['g', 'gram', 'grams']:
-        normalizedQuantity = number * 0.035274
-    elif unit in ['oz', 'ounce', 'ounces'] and 'fl' not in data.lower():
-        normalizedQuantity = number
-    elif unit in ['count', 'ct', 'pieces', 'pcs', 'each', 'ea', 'items', 'item']:
-        normalizedQuantity = number
-    elif unit in ['dozen', 'doz']:
-        normalizedQuantity = number * 12
-    elif unit in ['pair', 'pairs']:
-        normalizedQuantity = number * 2
-
-    elif unit in ['pack', 'pk', 'package', 'packages', 'box', 'boxes', 'bag', 'bags']:
-        normalizedQuantity = number
-    else:
-        normalizedQuantity = number
-    
-    return float(normalizedQuantity)
-
-
-
-
-def dbQuery():
-    connection = mysql.connector.connect(
-        host="localhost",
-        user="comp5500",
-        password="1qaz2wsx!QAZ@WSX",
-        database="listBase"
-    )
-    if connection.is_connected():
-        print("Connection to DB successful")
-        connection.close()
-        return True
-    else:
-        print("Connection to DB unsuccessful")
-        return False
-
-
-def userQuery(uid):
-    connection = mysql.connector.connect(
-        host="localhost",
-        user="comp5500",
-        password="1qaz2wsx!QAZ@WSX",
-        database="listBase"
-    )
-
-    if connection.is_connected():
-        print("Connection to DB successful")
-        query = """
-            SELECT qualPercent, pricePercent, quantPercent, shoppingSize, diet
-            FROM userPreferences 
-            WHERE uid = %s;
-        """
-        query2 = """
-            SELECT store1ID, store2ID, store3ID, store4ID, store5ID
-            FROM userStores
-            WHERE uid = %s;
-        """
-
-        cursor = connection.cursor()
-        cursor.execute(query, (uid,))
-        row = cursor.fetchone()
-        cursor.execute(query2, (uid,))
-        stored = cursor.fetchall()
-        print(stored)
-        stores = [store for store in stored[0] if store]
-        print(stores)
-
-        format_strings = ','.join(['%s'] * len(stores))
-        storeQuery = f"""
-            SELECT storeName, storeAddress
-            FROM storeInfo
-            WHERE storeID IN ({format_strings});
-        """
-        cursor.execute(storeQuery, tuple(stores))
-        storeInfo = cursor.fetchall()
-        connection.close()
-        return {
-            "qualPercent": row[0],
-            "pricePercent": row[1],
-            "quantPercent": row[2],
-            "shoppingSize": row[3],
-            "diet": row[4]
-        }, storeInfo
-
-
 def recommender(data, model, pricePercent, qualityPercent, quantityPercent):
-    normalizedData = normalizer(data)
+    normalizedData = dataFunctions.normalizer(data)
     total = pricePercent + qualityPercent + quantityPercent
     pw, qw, qtw = pricePercent / total, qualityPercent / total, quantityPercent / total
 
@@ -197,26 +73,26 @@ def bestList(data, model, pricePercent, qualityPercent, quantityPercent, origina
     baskets.sort(reverse=True, key=lambda x: x[0])
     return [basket_df for _, basket_df in baskets]
 
-def parallelScrape(listOfStores, *args, exclude_stores=None, max_workers=None):
-    exclude_stores = set(exclude_stores or [])
+def parallelScrape(listOfStores, *args, excludedStores=None, maxWorkers=None):
+    excludedStores = set(excludedStores or [])
     dfs = []
 
-    def scrape_wrapper(store_name):
-        if store_name in exclude_stores:
+    def scraper(storeName):
+        if storeName in excludedStores:
             return pd.DataFrame()
-        func = getattr(webscraper, store_name, None)
+        func = getattr(webscrapingFunctions, storeName, None)
         if callable(func):
             try:
-                df = func(*args)
+                df = pd.DataFrame(func(*args))
                 if isinstance(df, pd.DataFrame):
                     return df
             except Exception as e:
-                print(f"[Error] {store_name}: {e}")
+                print(f"[Error] {storeName}: {e}")
         return pd.DataFrame()
 
-    with ThreadPoolExecutor(max_workers=max_workers or len(listOfStores)) as executor:
+    with ThreadPoolExecutor(max_workers=maxWorkers or len(listOfStores)) as executor:
         futures = {
-            executor.submit(scrape_wrapper, store[0]): store[0]
+            executor.submit(scraper, store[0]): store[0]
             for store in listOfStores
         }
         for future in as_completed(futures):
@@ -227,14 +103,14 @@ def parallelScrape(listOfStores, *args, exclude_stores=None, max_workers=None):
     return dfs 
 
 def itemRecommender(item, uid):
-    model = load_model(f"UserData/{uid}/model-{uid}.h5")
-    prefs, listOfStores = userQuery(uid)
+    model = load_model(f"UserData/{uid}/model-{uid}.h5", compile=False)
+    prefs, listOfStores = dataFunctions.userQuery(uid)
 
-    dfs = parallelScrape(listOfStores, item, 10,exclude_stores={"walmart"})
+    dfs = parallelScrape(listOfStores, item, 10, False, excludedStores={"walmart"})
 
     originalData = pd.concat(dfs, ignore_index=True)
     data = originalData.copy()
-    data['quantity'] = data['quantity'].apply(quantityNormalizer)
+    data['quantity'] = data['quantity'].apply(dataFunctions.quantityNormalizer)
 
     recommendations = recommender(
         data,
@@ -254,18 +130,17 @@ def itemRecommender(item, uid):
     return itemsR
 
 def listRecommender(itemList, uid):
-    model_path = f"UserData/{uid}/model-{uid}.h5"
-    model = load_model(model_path)
-    prefs, listOfStores = userQuery(uid)
+    model = load_model(f"UserData/{uid}/model-{uid}.h5", compile=False)
+    prefs, listOfStores = dataFunctions.userQuery(uid)
 
-    dfs = parallelScrape(listOfStores, itemList, 5, exclude_stores={"walmart"})
+    dfs = parallelScrape(listOfStores, itemList, 5, False, excludedStores={"walmart"})
 
     if not dfs:
         return []
 
     originalData = pd.concat(dfs, ignore_index=True)
     data = originalData.copy()
-    data['quantity'] = data['quantity'].apply(quantityNormalizer)
+    data['quantity'] = data['quantity'].apply(dataFunctions.quantityNormalizer)
 
     baskets = bestList(
         data,
@@ -298,6 +173,3 @@ def listRecommender(itemList, uid):
         )
         results.append(item_set)
     return results
-
-#listItem = itemRecommender("Eggs",3)
-#print(listItem)

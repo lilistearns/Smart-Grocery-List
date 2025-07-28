@@ -10,7 +10,7 @@ sys.path.append("./Data")
 import userFunctions
 sys.path.append("./ML")
 import item
-import modelCreator
+import modelTrainer
 import shutil
 
 # Initializations
@@ -89,12 +89,12 @@ def login():
     else:
         password_hash = userFunctions.userLogin(email,password)
         if(password_hash == "Wrong Username"):
-            return jsonify({"message": "Username or Password cannot be found"})
+            return jsonify({"message": "Username or Password cannot be found"}),400
         if(bcrypt.check_password_hash(password_hash, password)):
             session["email"] = email
-            return jsonify({"message": "Login Successful"})
+            return jsonify({"message": "Login Successful"}),200
         else:
-            return jsonify({"message": "Username or Password incorrect"})
+            return jsonify({"message": "Username or Password incorrect"}),400
  
     
 @app.route("/logout", methods=["POST"])
