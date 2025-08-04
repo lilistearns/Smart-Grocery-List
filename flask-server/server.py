@@ -1,7 +1,8 @@
 from flask import Flask, request, jsonify, session
-from flask_session import Session # server-side sessions
-from cachelib.file import FileSystemCache # session backend
-from flask_bcrypt import Bcrypt # password hashing
+from flask_cors import CORS
+from flask_session import Session 
+from cachelib.file import FileSystemCache 
+from flask_bcrypt import Bcrypt 
 from flask_cors import CORS
 from threading import Thread
 import os 
@@ -21,12 +22,16 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "cachelib"
 app.config['SESSION_CACHELIB'] = FileSystemCache(cache_dir='flask_session', threshold=500)
 app.config["SESSION_USE_SIGNER"] = True
-app.config["SESSION_COOKIE_SECURE"] = True
-app.config["SESSION_COOKIE_SAMESITE"] = "None"
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+app.config["SESSION_COOKIE_SECURE"] = False
 
 Session(app)
 bcrypt = Bcrypt(app)
-CORS(app, supports_credentials = True)
+CORS(app, supports_credentials=True, origins=[
+    "http://10.220.58.6:3000",
+    "http://192.168.81.128:3000",
+    "http://localhost:3000"
+])
 
 
 @app.route("/", methods=["GET"])
@@ -55,6 +60,7 @@ def create_user():
     else:
 
         session["email"] = email
+        print(session)
         userFunctions.addUserInfo(name, username, password_hash, email)
         return jsonify({"message": "Sign-up Successful"})
 
@@ -242,4 +248,4 @@ def getCartSize():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000)

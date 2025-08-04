@@ -38,7 +38,7 @@ baseName = "scrapedData"
 
 def cookieGetter(storeURL):
     print("Made It Here")
-    url = "http://localhost:8191/v1"
+    url = "http://0.0.0.0:8191/v1"
     headers = {"Content-Type": "application/json"}
     data = {
         "cmd": "request.get",
@@ -127,7 +127,11 @@ def shaws(itemList, num, isCache):
         "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
         "ocp-apim-subscription-key": "5e790236c84e46338f4290aa1050cdd4",
     }
-    token = "3:J6Et94sP11cNaq03FWuoXQ==:8xyupgOa/0+q7dfZXisnYQpcdcQtnA+dRDfe/LPF/p8nKcquUuUlnw8W7AmrIMlDuJeUfr7zppz8O2G7Pk1ZF6WdwrnxIZKS2XMBuEhmMzOA6zbRim723Vgv9ZwPpD8GcGPS+7qVKEzj5TuR5dPEvtDvLI2QVA6wVwFE70aqOLZFXu3OY6FcMmIZJ1B4WwDXrXmI/A0UVkzQQ/CZ17khgW+P0Oh2At+/Pso6re+zf0PaMXtPs6W6vRmVqqW2dWQK0qtlUAXigJhdVZPCFPSgFW46OoYbjL6Eh6+YArmplegPgQ1EtlU7w8hx8zRsrmc70vttBp9fgI4ER19Eyg/34KQaAAbAgcssjy66lZO0Zzos+G9Px9aH35XQuCWOxWOcgVFRlcwSL8kHPEcy+9adnX92etPIVnWmz0IkAADBD4froQLfvfkAybm9muovA1nOBxRXGrWJRZKwj0ZepovL0Uqwsyy6e6A5SA5Ts3Wp3JCdZJhvqJr8WZn15AUqwXN1z1zvgNyr9tnePFsMNhuhr9OtBa9fnb88IkbbXiTVlP0=:fUUGL1lty05PLmiiRW9ZWzoyifMxeqnfHyygSKMjHw0="
+    with open("/mnt/hgfs/Cookies/request-ids.json", "r") as f:
+        tokens = json.load(f)
+    values = tokens.get("shaws", {})
+    requestID = values.get("requestId", "")
+    token = values.get("cookie", "")
     cookies = {
         "reese84": token
     }
@@ -145,10 +149,8 @@ def shaws(itemList, num, isCache):
                 print("Found in Library")
                 continue
         print("Finding:", itemName)
-        requestID = math.floor(1e13 * random.random())
-        requestID = f"{requestID}"
         params = {
-            "request-id": "6121753739420211399",
+            "request-id": requestID,
             "url": "https://www.shaws.com",
             "pageurl": "https://www.shaws.com",
             "pagename": "search",
@@ -223,8 +225,11 @@ def starmarket(itemList, num, isCache):
         "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
         "ocp-apim-subscription-key": "5e790236c84e46338f4290aa1050cdd4",
     }
-
-    token = "3:VFnqt4AgYEgArECvBqx9FQ==:9f2ewxwf5sfRUJtVypX5YMqfTXBhgdT0jyT2r1tSG7ah9vKzx/QUe11KuDUZcmxdtAHQosW2nH+aFG4tZIwyizNGnq+e6dBwZCx0Tz9Eb51TxsAANpPN0XLdevjZT5fEEKCBJzMs6uKxKo4OFUW8KfI+/Ov9RwE3szYj4HyKTfR+uX8j4ZxyPZHg+HOW3DIjN4BHRT1LrqRl2KlMEopP6PhjOC3WJdMscWjkUKwQf+wqUTWq4wyrzs2w4HZrLvqWaNsxZbUedR2VSz/adTbG7PSnjl7QjAomeRUUQnRrkC2JlidR5h/DnHdeyh8GTHi/78+3j0X1R1hZk0T7rgXX0fh5UwVaz174VYP4D2ABTN25mths3YiPyER+UD4/Gu+hVWr5+E5JZdIYZLLsgRqMa3+m/lIzmNcon6QseKzVQXC5BNxdjmlLfjGv3mlIL+uYpsJU35cQUhMEbBQgyPCtOjoZwyPmkyAofwF5uxij0bhJ9Rhkx665Sno6YFDK4sv4x1iIgQgSSreaY/adu7mCw45a+3dMt5VgsD4Oi6lF+Yg=:y28LiuKwtYZ7JJuEFR5s0iPooGohsWCh/+85WkL4Imk="
+    with open("/mnt/hgfs/Cookies/request-ids.json", "r") as f:
+        tokens = json.load(f)
+    values = tokens.get("starmarket", {})
+    requestID = values.get("requestId", "")
+    token = values.get("cookie", "")
     cookies = {
         "reese84": token
     }
@@ -242,10 +247,8 @@ def starmarket(itemList, num, isCache):
                 print("Found in Library")
                 continue
         print("Finding:", itemName)
-        requestID = math.floor(1e13 * random.random())
-        requestID = f"{requestID}"
         params = {
-            "request-id": "8491753739445390861",
+            "request-id": requestID,
             "url": "https://www.starmarket.com",
             "pageurl": "https://www.starmarket.com",
             "pagename": "search",
