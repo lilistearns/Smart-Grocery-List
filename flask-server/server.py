@@ -210,6 +210,15 @@ def acceptList():
     userFunctions.acceptList(goodList,uid)
     return jsonify({"message": "List Accepted"}), 200
 
+@app.route("/removeCartItem", methods=["POST"])
+def removeCartItem():
+    item = request.json.get("cartItem")
+    print(item)
+    email = session.get("email")
+    uid = userFunctions.getUID(email)
+    userFunctions.removeCartItem(item,uid)
+    return jsonify({"message": "List Accepted"}), 200
+
 @app.route("/rejectItem", methods=["POST"])
 def rejectItem():
     badItem = request.json.get("itemReject")
@@ -230,21 +239,25 @@ def rejectList():
 @app.route("/getPastList", methods=["POST"])
 def getPastList():
     pageNumber = request.json.get("pageNumber")
+    print(pageNumber)
     email = session.get("email")
     uid = userFunctions.getUID(email)
-    return userFunctions.getPastList(pageNumber,uid)
+    return userFunctions.getPastList(pageNumber,uid,"Accepted")
 
 @app.route("/getCart", methods=["POST"])
 def getCart():
     email = session.get("email")
     uid = userFunctions.getUID(email)
-    return userFunctions.getCart(uid)
+    cart =  userFunctions.getCart(uid)
+    print(cart)
+    return jsonify(cart)
 
 @app.route("/getCartSize", methods=["POST"])
 def getCartSize():
     email = session.get("email")
     uid = userFunctions.getUID(email)
-    return userFunctions.getCartSize(uid)
+    size = userFunctions.getCartSize(uid)
+    return jsonify(size)
 
 
 if __name__ == '__main__':

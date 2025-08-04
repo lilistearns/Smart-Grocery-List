@@ -1,6 +1,16 @@
 import React, { useState, useEffect } from 'react'
 import classes from "../styles/update.module.css"
+import { CartButton } from "../components/cartButton"
+import { PastListsButton } from "../components/pastListButton";
+const logout = async () => {
+    const options = {
+        credentials: "include",
+        method: "POST",
+    }
 
+    await fetch("http://10.220.58.6:5000/logout", options)
+    window.location.reload()
+}
 export function Update() {
     // Determine if currently logged in
     const [email, setEmail] = useState([{}])

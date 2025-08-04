@@ -415,10 +415,10 @@ def getPastList(listNumber, uid, directory):
     directoryPath = f"./UserData/{uid}/{directory}"
     pageMax = getMax(directoryPath)
     num = pageMax-listNumber
-    if(num<=0):
+    if(num<0):
         return "No More Lists"
     directoryPath = f"./UserData/{uid}/{directory}"
-    fullPath = f"{directoryPath}/list-{num}.json"
+    fullPath = f"{directoryPath}/list-{num+1}.json"
 
     with open(fullPath, "r") as f:
         data = json.load(f)  
@@ -430,10 +430,14 @@ def getPastList(listNumber, uid, directory):
 
 def getCart(uid):
     with open(f"./UserData/{uid}/cart.json", "r") as f:
-        data = json.load(f)  
-
-    cart= [tuple(item) for item in data]
-
+        data = json.load(f)
+    cart = [(
+        item["store"], 
+        item["price"], 
+        item["url"], 
+        item["productName"], 
+        item["quantity"]
+    ) for item in data]
     return cart
 
 def getCartSize(uid):
@@ -442,7 +446,7 @@ def getCartSize(uid):
     x = 0
     for item in data:
         x+=1
-    return x
+    return f"{x}"
 
 def getModel(qual, price, quant):
     qual = float(qual)
@@ -467,3 +471,13 @@ def getModel(qual, price, quant):
     
     dominant = max(weights, key=weights.get)
     return dominant
+
+def removeCartItem(item, uid):
+    path = f"./UserData/{uid}/cart.json"
+    with open(path, "r") as f:
+        data = json.load(f)
+    
+    data = [i for i in data if i.get("url") != item[2]]
+
+    with open(path, "w") as f:
+        json.dump(data, f)

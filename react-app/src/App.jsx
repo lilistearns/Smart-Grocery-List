@@ -4,6 +4,8 @@ import { Login } from './pages/login'
 import { SignUp } from './pages/signup'
 import { Preferences } from './pages/preferences'
 import { Update } from './pages/update'
+import { PastLists } from "./pages/pastlists"
+import { CartPage } from "./pages/cart";
 
 function App() {
 
@@ -15,6 +17,8 @@ function App() {
                 <Route path="/signup" element={<SignUp/>}/>
                 <Route path="/preferences" element={<Preferences/>}/>
                 <Route path="/update" element={<Update/>}/>
+                <Route path="/pastlists" element={<PastLists/>}/>
+                <Route path="/cart" element={<CartPage />} />
             </Routes>
         </Router>
     );

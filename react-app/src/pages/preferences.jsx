@@ -1,6 +1,16 @@
 import React, { useState, useEffect } from 'react'
 import classes from "../styles/preferences.module.css"
+import { CartButton } from "../components/cartButton"
+import { PastListsButton } from "../components/pastListButton";
+const logout = async () => {
+    const options = {
+        credentials: "include",
+        method: "POST",
+    }
 
+    await fetch("http://10.220.58.6:5000/logout", options)
+    window.location.reload()
+}
 export function Preferences() {
     const [email, setEmail] = useState([{}])
     
@@ -89,10 +99,15 @@ export function Preferences() {
         return(
             <div className={classes.container}>
                 {isLoading && 
-                <div className={classes.loading_container}>
-                    <p>Getting your account ready <br></br><br></br>One moment...</p>
-                    <div className={classes.loading_icon}></div>
-                </div>
+                <nav className={classes.loggedin_nav}>
+                    <a href="/update"><button className={classes.account}>Account</button></a>
+                    <h1 className={classes.header_title}>BudgetBasket</h1>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                        <CartButton />
+                        <PastListsButton />
+                        <button onClick={logout}>Logout</button>
+                    </div>
+                </nav>
                 }
                 {(storesDone && !isLoading) &&
                 <div>
