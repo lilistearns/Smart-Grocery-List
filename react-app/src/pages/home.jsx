@@ -11,7 +11,7 @@ export function Home() {
         }
 
     useEffect(() => { 
-            fetch("http://127.0.0.1:5000/", options)
+            fetch("http://10.220.58.6:5000/", options)
             .then(response => response.json())
             .then(data => {setEmail(data)})
     }, [])
@@ -24,7 +24,7 @@ export function Home() {
             method: "POST",
         }
 
-        await fetch("http://127.0.0.1:5000/logout", options)
+        await fetch("http://10.220.58.6:5000/logout", options)
         window.location.reload()
     }
 
@@ -56,7 +56,7 @@ export function Home() {
         e.preventDefault()
 
         const data = {item}
-        const url = "http://127.0.0.1:5000/findItem"
+        const url = "http://10.220.58.6:5000/findItem"
 
         const options = {
             credentials: "include",
@@ -93,7 +93,7 @@ export function Home() {
         e.preventDefault()
 
         const data = {itemList}
-        const url = "http://127.0.0.1:5000/findList"
+        const url = "http://10.220.58.6:5000/findList"
 
         const options = {
             credentials: "include",
@@ -128,7 +128,7 @@ export function Home() {
 
             if(itemReject.length !== 0){
                 const data = {itemReject}
-                const url = "http://127.0.0.1:5000/rejectItem"
+                const url = "http://10.220.58.6:5000/rejectItem"
 
                 const options = {
                     credentials: "include",
@@ -159,7 +159,7 @@ export function Home() {
 
             if(listReject.length !== 0){
                 const data = {listReject}
-                const url = "http://127.0.0.1:5000/rejectList"
+                const url = "http://10.220.58.6:5000/rejectList"
 
                 const options = {
                     credentials: "include",
@@ -191,7 +191,7 @@ export function Home() {
 
             if(itemAccept.length !== 0){
                 const data = {itemAccept}
-                const url = "http://127.0.0.1:5000/acceptItem"
+                const url = "http://10.220.58.6:5000/acceptItem"
 
                 const options = {
                     credentials: "include",
@@ -222,7 +222,7 @@ export function Home() {
 
             if(listAccept.length !== 0){
                 const data = {listAccept}
-                const url = "http://127.0.0.1:5000/acceptList"
+                const url = "http://10.220.58.6:5000/acceptList"
 
                 const options = {
                     credentials: "include",

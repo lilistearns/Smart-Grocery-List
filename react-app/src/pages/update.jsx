@@ -11,7 +11,7 @@ export function Update() {
         }
 
     useEffect(() => { 
-            fetch("http://127.0.0.1:5000/", options)
+            fetch("http://10.220.58.6:5000/", options)
             .then(response => response.json())
             .then(data => {setEmail(data)})
     }, [])
@@ -40,7 +40,7 @@ export function Update() {
         e.preventDefault()
 
         const data = {storeID1, storeID2, storeID3, storeID4, storeID5}
-        const url = "http://127.0.0.1:5000/updateStores"
+        const url = "http://10.220.58.6:5000/updateStores"
 
         const options = {
             credentials: "include",
@@ -68,7 +68,7 @@ export function Update() {
         e.preventDefault()
 
         const data = {qual, price, quant}
-        const url = "http://127.0.0.1:5000/updatePreferences"
+        const url = "http://10.220.58.6:5000/updatePreferences"
 
         const options = {
             credentials: "include",
@@ -96,7 +96,7 @@ export function Update() {
         e.preventDefault()
 
         const data = {size}
-        const url = "http://127.0.0.1:5000/updateShoppingSize"
+        const url = "http://10.220.58.6:5000/updateShoppingSize"
 
         const options = {
             credentials: "include",
@@ -125,7 +125,7 @@ export function Update() {
 
         const data = {diet}
         console.log(diet)
-        const url = "http://127.0.0.1:5000/updateDiet"
+        const url = "http://10.220.58.6:5000/updateDiet"
 
         const options = {
             credentials: "include",

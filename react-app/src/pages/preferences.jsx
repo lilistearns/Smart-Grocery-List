@@ -10,7 +10,7 @@ export function Preferences() {
     }
 
     useEffect(() => { 
-        fetch("http://127.0.0.1:5000/", options)
+        fetch("http://10.220.58.6:5000/", options)
         .then(response => response.json())
         .then(data => {setEmail(data)})
     }, [])
@@ -35,7 +35,7 @@ export function Preferences() {
     const onSubmitPreferences = async (e) => {
         e.preventDefault()
         const data = {qual, price, quant, size, diet}
-        const url = "http://127.0.0.1:5000/insertPreferences"
+        const url = "http://10.220.58.6:5000/insertPreferences"
 
         const options = {
             credentials: "include",
@@ -63,7 +63,7 @@ export function Preferences() {
     const onSubmitStores = async (e) => {
         e.preventDefault()
         const data = {storeID1, storeID2, storeID3, storeID4, storeID5}
-        const url = "http://127.0.0.1:5000/insertStores"
+        const url = "http://10.220.58.6:5000/insertStores"
 
         const options = {
             credentials: "include",

@@ -11,7 +11,7 @@ export function Login() {
         e.preventDefault()
 
         const data = {sendEmail, sendPassword}
-        const url = "http://127.0.0.1:5000/login"
+        const url = "http://10.220.58.6:5000/login"
 
         const options = {
             credentials: "include",

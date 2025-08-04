@@ -14,7 +14,7 @@ export function SignUp() {
         e.preventDefault()
 
         const data = {sendName, sendEmail, sendUsername, sendPassword}
-        const url = "http://127.0.0.1:5000/signup"
+        const url = "http://10.220.58.6:5000/signup"
 
         const options = {
             credentials: "include",
