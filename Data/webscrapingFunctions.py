@@ -120,19 +120,21 @@ def tryPrescraped(itemName):
             print(f"Error loading cached file for {itemName}: {e}")
             return None
 
-#Webscrapes for item information on shaws
+#Webscrapes for item information on shaws/starmarket works the exact same most documentation and code is shared.
 def shaws(itemList, num, isCache):
     rows = []
     print("Scraping Shaw's")
     if isinstance(itemList, str):
         itemList = [itemList]
 
-    
+    #necessary headers
     headers = {
         "accept": "application/json, text/plain, */*",
         "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
         "ocp-apim-subscription-key": "5e790236c84e46338f4290aa1050cdd4",
     }
+
+    #retrieves constantly retrieved cookies
     with open("/mnt/hgfs/Cookies/request-ids.json", "r") as f:
         tokens = json.load(f)
     values = tokens.get("shaws", {})
@@ -141,10 +143,11 @@ def shaws(itemList, num, isCache):
     cookies = {
         "reese84": token
     }
-
+    #begins session for retrieval
     session = requests.Session()
     URL = "https://www.shaws.com/abs/pub/xapi/pgmsearch/v1/search/products"
 
+    #For each item in the list it will create a new request using the parameters, and with the cookies and headers generate a fulfillable request, then it is all parsed out and returned
     for itemName in itemList:
         if isCache:
             rows = []
@@ -182,6 +185,8 @@ def shaws(itemList, num, isCache):
             print(f"Failed to fetch products for {itemName}: {e}")
             continue
 
+
+        #Begins parsing out each product and returns important information
         docs = data.get("primaryProducts", {}).get("response", {}).get("docs", [])
         print(f"Found {len(docs)} products for {itemName}")
         if(len(docs)==0):
@@ -315,7 +320,7 @@ def starmarket(itemList, num, isCache):
 
     return rows
 
-
+#webscrapes for walmart by calling an external API, scraperAI walmart is too big of a task to crack and would take up too much time in project
 def walmart(itemList, num, isCache):
     print("Scraping Walmart")
     rows = []
@@ -380,7 +385,7 @@ def walmart(itemList, num, isCache):
 
     return rows
 
-
+#Uses requests to request full html page and fromt there it is parsed by BS4
 def hannaford(itemList, num, isCache):
     print("Scraping Hannaford")
     rows = []

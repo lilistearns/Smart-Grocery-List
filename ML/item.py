@@ -25,6 +25,8 @@ import webscrapingFunctions
 
 tf.config.run_functions_eagerly(True)
 
+
+#main function that given data and the users price preferences will weigh the data according to user preferences. Then it makes predictions and sorts it, returning the sorted data.
 def recommender(data, model, pricePercent, qualityPercent, quantityPercent):
     normalizedData = dataFunctions.normalizer(data)
     total = pricePercent + qualityPercent + quantityPercent
@@ -43,6 +45,7 @@ def recommender(data, model, pricePercent, qualityPercent, quantityPercent):
     data["score"] = model.predict(input)[:, 0]
     return data.sort_values("score", ascending=False)
 
+#Main function for bestList, similar to what is done in item recommendation flow, but adds the store averaging and preddiction stage. This ensures the best stores list is ranked first.
 def bestList(data, model, pricePercent, qualityPercent, quantityPercent, original_item_list):
     scored_data = recommender(
         data,
@@ -54,6 +57,8 @@ def bestList(data, model, pricePercent, qualityPercent, quantityPercent, origina
     baskets = []
     stores = scored_data["store"].unique()
 
+
+    #Main difference that sorts by best store according to average score
     for store in stores:
         store_items = scored_data[scored_data["store"] == store]
         basket = []
@@ -73,6 +78,7 @@ def bestList(data, model, pricePercent, qualityPercent, quantityPercent, origina
     baskets.sort(reverse=True, key=lambda x: x[0])
     return [basket_df for _, basket_df in baskets]
 
+#begins the multithreaded call of scraping functions, for quicker retrieval as most time is waiting not calculating.
 def parallelScrape(listOfStores, *args, excludedStores=None, maxWorkers=None):
     excludedStores = set(excludedStores or [])
     dfs = []
@@ -102,6 +108,7 @@ def parallelScrape(listOfStores, *args, excludedStores=None, maxWorkers=None):
 
     return dfs 
 
+#Main function for item recommendation, gathers all necessary information and normalizes data and quantity before passing it to recommedner function. Returns the 10 best items
 def itemRecommender(item, uid):
     model = load_model(f"UserData/{uid}/model-{uid}.h5", compile=False)
     prefs, listOfStores = dataFunctions.userQuery(uid)
@@ -129,6 +136,7 @@ def itemRecommender(item, uid):
 
     return itemsR
 
+#main function for list that similarly gathers information about the user and the data before passing it to bestList where data is normalized and sent to recommender. Returns # of lists = # of stores user has.
 def listRecommender(itemList, uid):
     model = load_model(f"UserData/{uid}/model-{uid}.h5", compile=False)
     prefs, listOfStores = dataFunctions.userQuery(uid)

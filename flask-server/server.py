@@ -14,9 +14,8 @@ import item
 import modelTrainer
 import shutil
 
-# Initializations
+# Initializations important for Cross Origin Request errors. Due to port-forwarding limitations on school network these are encessary.
 app = Flask(__name__)
-
 app.config["SECRET_KEY"] = "secret" # set for testing purposes
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "cachelib"
@@ -24,6 +23,7 @@ app.config['SESSION_CACHELIB'] = FileSystemCache(cache_dir='flask_session', thre
 app.config["SESSION_USE_SIGNER"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 app.config["SESSION_COOKIE_SECURE"] = False
+
 
 Session(app)
 bcrypt = Bcrypt(app)
@@ -34,6 +34,7 @@ CORS(app, supports_credentials=True, origins=[
 ])
 
 
+#gets home page, if there is an email returns it (testing)
 @app.route("/", methods=["GET"])
 def getHome():
     email = session.get("email")
@@ -46,6 +47,7 @@ def getHome():
         return jsonify({"error": "Not logged in"})
 
 
+#signup post that takes in the data, generates a password hash and sends it to the database, then initializes email cookie.
 @app.route("/signup", methods=["POST"])
 def create_user():
     name = request.json.get("sendName")
@@ -64,7 +66,7 @@ def create_user():
         userFunctions.addUserInfo(name, username, password_hash, email)
         return jsonify({"message": "Sign-up Successful"})
 
-
+#insertpreferences post that takes in the preferences of users, and sends it to the database
 @app.route("/insertPreferences", methods=["POST"])
 def insertPreferences():
     qual = request.json.get("qual")
@@ -83,7 +85,7 @@ def insertPreferences():
 
     return jsonify({"message": "Preference Creation Successful"})
 
-
+#login function that retrieves password based on email, checks the hash against it and returns if it failed or not
 @app.route("/login", methods=["POST"])
 def login():
     email = request.json.get("sendEmail")
@@ -102,12 +104,13 @@ def login():
         else:
             return jsonify({"message": "Username or Password incorrect"}),400
  
-    
+#logs out user by getting rid of serverside cookie
 @app.route("/logout", methods=["POST"])
 def logout():
     session.pop("email", None)
     return jsonify({"action": "Logged Out"})
 
+#updates user stores
 @app.route("/updateStores", methods=["POST"])
 def updateStores():
     storeID1 = request.json.get("storeID1")
@@ -124,6 +127,8 @@ def updateStores():
     userFunctions.updateStores(uid,storeIDS)
     return jsonify({"message": "Update Successful"})
 
+
+#adds user stores
 @app.route("/insertStores", methods=["POST"])
 def insertStores():
     storeID1 = request.json.get("storeID1")
@@ -140,6 +145,7 @@ def insertStores():
     userFunctions.insertStores(uid,storeIDS)
     return jsonify({"message": "Update Successful"})
 
+#update user preferences
 @app.route("/updatePreferences", methods=["POST"])
 def updatePreferences():
     qual = request.json.get("qual")
@@ -152,6 +158,7 @@ def updatePreferences():
     print(status)
     return jsonify({"message": "Update Successful"})
 
+#updates the users diet
 @app.route("/updateDiet", methods=["POST"])
 def updateDiet():
     diet = request.json.get("diet")
@@ -162,6 +169,7 @@ def updateDiet():
     return jsonify({"message": "Update Successful"})
 
 
+#updates the users size in the database
 @app.route("/updateShoppingSize", methods=["POST"])
 def updateShoppingSize():
     size = request.json.get("size")
@@ -170,6 +178,8 @@ def updateShoppingSize():
     userFunctions.updateShoppingSize(uid, size)
     return jsonify({"message": "Update Successful"})
 
+
+#sends the itemRecommender call and returns the list of items to front end
 @app.route("/findItem", methods=["POST"])
 def findItem():
     inputItem = request.json.get("item")
@@ -182,6 +192,7 @@ def findItem():
     #NEW OUTPUT: [("Shaw's", 3.69, 'https://www.shaws.com/shop/product-details/970038173', 'Hood Whole Milk - 64 Oz', 'GAL HG'), ('Star Market', 3.69, 'https://www.starmarket.com/shop/product-details/970038173', 'Hood Whole Milk - 64 Oz', 'GAL HG'), ("Shaw's", 2.69, 'https://www.shaws.com/shop/product-details/136010013', 'Lucerne Milk - Half Gallon (container may vary)', 'GAL HG'), ('Star Market', 2.69, 'https://www.starmarket.com/shop/product-details/136010013', 'Lucerne Milk - Half Gallon (container may vary)', 'GAL HG'), ('Star Market', 2.69, 'https://www.starmarket.com/shop/product-details/136010016', 'Lucerne Milk Reduced Fat 2% Milkfat - 64 Fl. Oz. (package may vary)', 'GAL HG'), ("Shaw's", 2.69, 'https://www.shaws.com/shop/product-details/136010016', 'Lucerne Milk Reduced Fat 2% Milkfat - 64 Fl. Oz. (package may vary)', 'GAL HG'), ('Star Market', 6.99, 'https://www.starmarket.com/shop/product-details/136050129', 'Lactaid Whole Milk - 96 Oz', 'GAL. FZ'), ("Shaw's", 6.99, 'https://www.shaws.com/shop/product-details/136050129', 'Lactaid Whole Milk - 96 Oz', 'GAL. FZ'), ("Shaw's", 3.99, 'https://www.shaws.com/shop/product-details/136010449', 'Lucerne Milk Lowfat 1% Milkfat 1 Gallon - 128 Fl. Oz.', 'GAL. GA'), ('Star Market', 3.99, 'https://www.starmarket.com/shop/product-details/136010121', 'Lucerne Milk Whole 1 Gallon - 128 Fl. Oz.', 'GAL. GA')]
 
 
+#sends the listRecommender call and returns the list of items to front end
 @app.route("/findList", methods=["POST"])
 def findList():
     inputList = request.json.get("itemList")
@@ -193,7 +204,7 @@ def findList():
 
     #NEW OUTPUT: [[('Star Market', 3.99, 'https://www.starmarket.com/shop/product-details/136010121', 'Lucerne Milk Whole 1 Gallon - 128 Fl. Oz.', '1 ea'), ('Star Market', 4.49, 'https://www.starmarket.com/shop/product-details/960273951', 'Lucerne Farms Eggs Large Cage Free - 12 Count', 'DOZEN CT')], [("Shaw's", 3.99, 'https://www.shaws.com/shop/product-details/136010121', 'Lucerne Milk Whole 1 Gallon - 128 Fl. Oz.', '1 ea'), ("Shaw's", 4.49, 'https://www.shaws.com/shop/product-details/960273951', 'Lucerne Farms Eggs Large Cage Free - 12 Count', 'DOZEN CT')], [('Hannaford', 2.59, 'https://www.hannaford.com/product/hannaford-whole-milk/932363?hdrKeyword=Milk', 'Hannaford Whole Milk', 'Gallon'), ('Hannaford', 4.39, 'https://www.hannaford.com/product/pete-gerry-s-organic-cage-free-grade-a-extra-large-eggs/866130?hdrKeyword=Eggs', "Pete & Gerry's Organic Cage Free Grade A Extra Large Eggs", '6 Ct')]]
     
-
+#takes in an item and appends it to accepted and cart
 @app.route("/acceptItem", methods=["POST"])
 def acceptItem():
     goodItem = request.json.get("itemAccept")
@@ -202,6 +213,7 @@ def acceptItem():
     userFunctions.acceptItem(goodItem,uid)
     return jsonify({"message": "Item Accepted"}), 200
 
+#takes in a list and appends it to cart, past lists, and accepted items
 @app.route("/acceptList", methods=["POST"])
 def acceptList():
     goodList = request.json.get("listAccept")
@@ -210,6 +222,7 @@ def acceptList():
     userFunctions.acceptList(goodList,uid)
     return jsonify({"message": "List Accepted"}), 200
 
+#adds the item to rejected items list
 @app.route("/rejectItem", methods=["POST"])
 def rejectItem():
     badItem = request.json.get("itemReject")
@@ -219,6 +232,7 @@ def rejectItem():
     userFunctions.rejectItem(badItem,uid)
     return jsonify({"message": "Item rejected"}), 200
 
+#takes in the list and adds it to rejected lists
 @app.route("/rejectList", methods=["POST"])
 def rejectList():
     badList= request.json.get("listReject")
@@ -227,6 +241,7 @@ def rejectList():
     userFunctions.rejectList(badList,uid)
     return jsonify({"message": "List rejected"}), 200
 
+#returns a past list given a page number
 @app.route("/getPastList", methods=["POST"])
 def getPastList():
     pageNumber = request.json.get("pageNumber")
@@ -234,18 +249,20 @@ def getPastList():
     uid = userFunctions.getUID(email)
     return userFunctions.getPastList(pageNumber,uid)
 
+#returns the users cart
 @app.route("/getCart", methods=["POST"])
 def getCart():
     email = session.get("email")
     uid = userFunctions.getUID(email)
     return userFunctions.getCart(uid)
 
+#returns user cart size
 @app.route("/getCartSize", methods=["POST"])
 def getCartSize():
     email = session.get("email")
     uid = userFunctions.getUID(email)
     return userFunctions.getCartSize(uid)
 
-
+#starts server
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000)

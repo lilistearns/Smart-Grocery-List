@@ -12,6 +12,8 @@ sys.path.append("./Data")
 import dataFunctions
 tf.config.run_functions_eagerly(True)
 
+
+#takes in the data and normalizes it to a dataframe
 def getTrainingData(sdata):
     data = pd.DataFrame(sdata)
     data = dataFunctions.normalizer(data)
@@ -19,7 +21,7 @@ def getTrainingData(sdata):
     y = np.array(data["rating"])
     return X, y
 
-
+#Takes in uid and returns accepted and rejected data that was stored. Gives items 0 for rejected and 1 for accepted, this is useful for retraining
 def loadUserData(uid):
     acceptedPath = f"./UserData/{uid}/Accepted/acceptedItems.json"
     rejectedPath = f"./UserData/{uid}/Rejected/rejectedItems.json"
@@ -47,6 +49,7 @@ def loadUserData(uid):
     return data
 
 
+#Creates (obsolete) and retrains the model (working) for the user with their stored data
 def modelMaker(uid):
     user_dir = f"/home/comp5500/git/Smart-Grocery-List/UserData/{uid}"
     os.makedirs(user_dir, exist_ok=True)

@@ -9,7 +9,9 @@ sys.path.append("./Data")
 import webscrapingFunctions
 import threading
 
-
+##
+# This program is for getting all of the listOfItems products from each store into files named after the items. Run on a cronjob for daily retrieval.
+##
 #For scraping all items into individual files
 listOfItems = [
     "milk", "eggs", "bread", "butter", "cheese", "yogurt", "cream", "sour cream", "cottage cheese", "ice cream",
@@ -29,9 +31,11 @@ listOfItems = [
     "soda", "juice", "bottled water", "sports drinks", "energy drinks", "beer", "wine", "frozen vegetables", "frozen fruit", "frozen pizza",
     "frozen meals", "frozen burritos", "frozen waffles", "frozen fries", "ice", "toilet paper", "paper towels", "tissues", "napkins", "aluminum foil"
 ]
-
+#list of currently avaialble stores
 stores = ["starmarket","shaws","hannaford"]
 
+
+#creates callable function library
 store_functions = {
     "starmarket": webscrapingFunctions.starmarket,
     "shaws": webscrapingFunctions.shaws,
@@ -40,13 +44,14 @@ store_functions = {
 threads = []
 
 
+#begins multithreading through the function call library, starts
 for store in stores:
     if store in store_functions:
         thread = threading.Thread(target=store_functions[store], args=(listOfItems, 15,True,))  
         threads.append(thread)
         thread.start()
 
-
+# ends and joins
 for thread in threads:
     thread.join()
 
