@@ -10,7 +10,7 @@ import mysql.connector
 #   modelTrainer.py.
 def dbConnect():
     connection = mysql.connector.connect(
-        host="localhost",
+        host="0.0.0.0",
         user="comp5500",
         password="1qaz2wsx!QAZ@WSX",
         database="listBase"
