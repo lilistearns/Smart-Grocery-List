@@ -6,7 +6,7 @@ import re
 import sys
 import dataFunctions
 
-# userInfoCreation
+# userInfoCreation, adds all necessary information into the database used in /server.py
 def addUserInfo(name, username, password, email):
     connection = dataFunctions.dbConnect()
     if not connection:
@@ -29,7 +29,7 @@ def addUserInfo(name, username, password, email):
         connector.close()
         connection.close()
 
-# creates User Preferences
+# creates User Preferences, adds all necessary preference based information into the database used in /server.py
 def insertPreferences(uid, qual, price, quant, size, diet):
     connection = dataFunctions.dbConnect()
     if not connection:
@@ -49,7 +49,7 @@ def insertPreferences(uid, qual, price, quant, size, diet):
         connector.close()
         connection.close()
 
-#update prefernces
+#update prefernces, updates all necessary preference based information into the database used in /server.py for uid
 def updatePreferences(uid, qual, price, quant):
     connection = dataFunctions.dbConnect()
     if not connection:
@@ -70,7 +70,7 @@ def updatePreferences(uid, qual, price, quant):
         connector.close()
         connection.close()
 
-# update shopping size
+# update shopping size, updates size information into the database used in /server.py for uid
 def updateShoppingSize(uid, size):
     connection = dataFunctions.dbConnect()
     if not connection:
@@ -91,7 +91,7 @@ def updateShoppingSize(uid, size):
         connector.close()
         connection.close()
 
-# updates diet
+# updates diet, updates diet information into the database used in /server.py for uid
 def updateDiet(uid, diet):
     connection = dataFunctions.dbConnect()
     if not connection:
@@ -112,7 +112,7 @@ def updateDiet(uid, diet):
         connector.close()
         connection.close()
 
-# storesUpdater
+# storesUpdater, updates a user's selected store based on uid
 def updateStores(uid, storeIDs):
     connection = dataFunctions.dbConnect()
     if not connection:
@@ -145,7 +145,7 @@ def updateStores(uid, storeIDs):
         connector.close()
         connection.close()
 
-#insertStores
+#insertStores, adds user stores with uid
 def insertStores(uid, storeIDs):
     connection = dataFunctions.dbConnect()
     if not connection:
@@ -171,7 +171,7 @@ def insertStores(uid, storeIDs):
         cursor.close()
         connection.close()
 
-
+#Gets the id of a store by taking in store and matching to DB rows
 def getStoreIDs(stores):
     connection = dataFunctions.dbConnect()
     if not connection:
@@ -203,8 +203,8 @@ def getStoreIDs(stores):
         cursor.close()
         connection.close()
 
-# usernameChanger
-def updateUserName(uid, new_name):
+# usernameChanger, changes the username of the user
+def updateUserName(uid, newName):
     connection = dataFunctions.dbConnect()
     if not connection:
         return
@@ -213,7 +213,7 @@ def updateUserName(uid, new_name):
     try:
         connector.execute("SELECT uid FROM userInfo WHERE uid = %s", (uid,))
         if connector.fetchone():
-            connector.execute("UPDATE userInfo SET name = %s WHERE uid = %s", (new_name, uid))
+            connector.execute("UPDATE userInfo SET name = %s WHERE uid = %s", (newName, uid))
             connection.commit()
             print(f"Updated name for uid {uid}")
         else:
@@ -224,8 +224,8 @@ def updateUserName(uid, new_name):
         connector.close()
         connection.close()
 
-# emailChanger
-def updateUserEmail(uid, new_email):
+# emailChanger, updates the email of the user.
+def updateUserEmail(uid, newEmail):
     connection = dataFunctions.dbConnect()
     if not connection:
         return
@@ -234,7 +234,7 @@ def updateUserEmail(uid, new_email):
     try:
         connector.execute("SELECT uid FROM userInfo WHERE uid = %s", (uid,))
         if connector.fetchone():
-            connector.execute("UPDATE userInfo SET email = %s WHERE uid = %s", (new_email, uid))
+            connector.execute("UPDATE userInfo SET email = %s WHERE uid = %s", (newEmail, uid))
             connection.commit()
             print(f"Updated email for uid {uid}")
         else:
@@ -245,8 +245,8 @@ def updateUserEmail(uid, new_email):
         connector.close()
         connection.close()
 
-# passwordChanger
-def updateUserPassword(uid, new_password):
+# passwordChanger, updates the users password
+def updateUserPassword(uid, newPassword):
     connection = dataFunctions.dbConnect()
     if not connection:
         return
@@ -255,7 +255,7 @@ def updateUserPassword(uid, new_password):
     try:
         connector.execute("SELECT uid FROM userInfo WHERE uid = %s", (uid,))
         if connector.fetchone():
-            connector.execute("UPDATE userInfo SET password = %s WHERE uid = %s", (new_password, uid))
+            connector.execute("UPDATE userInfo SET password = %s WHERE uid = %s", (newPassword, uid))
             connection.commit()
             print(f"Updated password for uid {uid}")
         else:
@@ -303,6 +303,7 @@ def getUID(email):
     finally:
         connection.close()
 
+#appends the information given to the filename given. Used primarily for accept reject feature!
 def appendJson(filename, newData):
     os.makedirs(os.path.dirname(filename), exist_ok=True)
     if os.path.exists(filename):
@@ -325,6 +326,7 @@ def appendJson(filename, newData):
     with open(filename, "w") as f:
         json.dump(list(existing_urls.values()), f, indent=2)
 
+#accepts an item and appends to cart and acceptedItems accordingly
 def acceptItem(item, uid):
     filename = f"./UserData/{uid}/Accepted/acceptedItems.json"
     cartname = f"./UserData/{uid}/cart.json"
@@ -339,6 +341,7 @@ def acceptItem(item, uid):
     appendJson(cartname,item_dict)
     print(f"Appended item to {filename}")
 
+#rejects an item and appends to rejectItems.
 def rejectItem(item, uid):
     filename = f"./UserData/{uid}/Rejected/rejectedItems.json"
     item_dict = {
@@ -351,6 +354,7 @@ def rejectItem(item, uid):
     appendJson(filename, item_dict)
     print(f"Appended item to {filename}")
 
+#accepts a list, and appends it to acceptedItems and cart
 def acceptList(itemlist, uid):
     filename = f"./UserData/{uid}/Accepted/acceptedItems.json"
     cartname = f"./UserData/{uid}/cart.json"
@@ -372,10 +376,14 @@ def acceptList(itemlist, uid):
     saveListRecommendation(itemlist, uid, directory)
     print(f"Appended {len(items)} items to {filename}")
 
+
+#rejects a list
 def rejectList(itemlist, uid):
     directory = f"./UserData/{uid}/Rejected/"
     saveListRecommendation(itemlist, uid, directory)
 
+
+#Takes in a list and saves it for retrieval for later (past lists)
 def saveListRecommendation(itemlist, uid, directory):
     os.makedirs(directory, exist_ok=True)
 
@@ -400,6 +408,7 @@ def saveListRecommendation(itemlist, uid, directory):
 
     print(f"Saved list to {filepath}")
 
+#Gets the amount of files in the directory for parsing and retrieval
 def getMax(directory):
     pattern = re.compile(r"list-(\d+)\.json$")
     numbers = []
@@ -411,6 +420,7 @@ def getMax(directory):
 
     return max(numbers) if numbers else None
 
+#gets a past list given a number, it will go decrement as user changes pages!
 def getPastList(listNumber, uid, directory):
     directoryPath = f"./UserData/{uid}/{directory}"
     pageMax = getMax(directoryPath)
@@ -428,6 +438,7 @@ def getPastList(listNumber, uid, directory):
 
     return pastList
 
+#retrieves cart information based off of the json list items are written too!
 def getCart(uid):
     with open(f"./UserData/{uid}/cart.json", "r") as f:
         data = json.load(f)  
@@ -436,6 +447,8 @@ def getCart(uid):
 
     return cart
 
+
+#gets the cartsize
 def getCartSize(uid):
     with open(f"./UserData/{uid}/cart.json", "r") as f:
         data = json.load(f)  
@@ -444,6 +457,7 @@ def getCartSize(uid):
         x+=1
     return x
 
+#Based on users preferences the best pretrained model will be selected as a base
 def getModel(qual, price, quant):
     qual = float(qual)
     price = float(price)

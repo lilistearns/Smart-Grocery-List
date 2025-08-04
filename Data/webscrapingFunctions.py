@@ -12,6 +12,7 @@ import os
 import json
 import threading
 
+#Items used for prescraping
 listOfItems = [
     "milk", "eggs", "bread", "butter", "cheese", "yogurt", "cream", "sour cream", "cottage cheese", "ice cream",
     "chicken breast", "ground beef", "pork chops", "bacon", "sausage", "ham", "turkey", "hot dogs", "deli meat", "rotisserie chicken",
@@ -36,6 +37,9 @@ fileLock = {item: threading.Lock() for item in listOfItems}
 dateString = datetime.now().strftime("%Y-%m-%d")
 baseName = "scrapedData"
 
+
+
+#retrieves cookies, obsolete
 def cookieGetter(storeURL):
     print("Made It Here")
     url = "http://localhost:8191/v1"
@@ -51,7 +55,7 @@ def cookieGetter(storeURL):
     print(response.status_code)
     return response.json()["solution"]["cookies"]
 
-
+#loads cookies into session, obsolete
 def loadCookies(session: requests.Session, cookiesDict: Dict):
     cookie = {}
     for elem in cookiesDict:
@@ -59,7 +63,7 @@ def loadCookies(session: requests.Session, cookiesDict: Dict):
     session.cookies = cookiejar_from_dict(cookie)
     return session
 
-
+#appends an item to the name to the json file for itemName-{date}.json (This is for daily retrievals and longterm product information storage)
 def appendItem(data, itemName):
     if not data:
         return
@@ -86,6 +90,7 @@ def appendItem(data, itemName):
             json.dump(existingData, f, indent=2, ensure_ascii=False)
 
 
+#dumps all data into one file, this is for training all models
 def appendData(data):
 
     outputName = f"Data/scrapingLibrary/{baseName}_{dateString}.json"
@@ -103,7 +108,7 @@ def appendData(data):
     with open(outputName, "w", encoding="utf-8") as f:
         json.dump(existing_data, f, indent=2, ensure_ascii=False)
 
-
+#looks for the itemName as a path, this will return if it was already retrieved and stored before webscraping.
 def tryPrescraped(itemName):
     itemName = re.sub(r'[^\w\s-]', '', itemName).strip()
     i = re.sub(r'[-\s]+', '_', itemName)
@@ -115,13 +120,14 @@ def tryPrescraped(itemName):
             print(f"Error loading cached file for {itemName}: {e}")
             return None
 
-
+#Webscrapes for item information on shaws
 def shaws(itemList, num, isCache):
     rows = []
     print("Scraping Shaw's")
     if isinstance(itemList, str):
         itemList = [itemList]
 
+    
     headers = {
         "accept": "application/json, text/plain, */*",
         "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",

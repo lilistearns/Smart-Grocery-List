@@ -2,6 +2,8 @@ import mysql.connector
 import sys
 import dataFunctions
 
+
+#Used to add a store to the database.
 def addOrUpdateStore(storeAddress, storeName, qualRating, priceRating, quantRating):
     connection = dataFunctions.dbConnect()()
     if not connection:
@@ -30,6 +32,7 @@ def addOrUpdateStore(storeAddress, storeName, qualRating, priceRating, quantRati
     connection.commit()
     connection.close()
 
+#main, not really used in the grand scheme of project
 if __name__ == "__main__":
     print(len(sys.argv))
     if len(sys.argv) != 6:
