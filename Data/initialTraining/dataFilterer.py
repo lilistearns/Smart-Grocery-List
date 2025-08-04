@@ -13,6 +13,8 @@ dateString = datetime.now().strftime("%Y-%m-%d")
 
 preferences = ['quality', 'price', 'quantity', 'balanced', 'premium', 'budget', 'bulk']
 
+
+#static values for parameters/weights. Helps get a good baseline of items for reference in training.
 ratingParams = {
     'quality':  ((8.5, 1.5), (6.0, 2.0), (6.5, 1.8)),
     'price':    ((6.5, 2.0), (8.5, 1.2), (6.0, 1.8)),
@@ -23,6 +25,7 @@ ratingParams = {
     'bulk':     ((5.0, 2.0), (7.5, 1.5), (9.0, 1.0)),
 }
 
+# gets all of the data from the scraped file with all product information gathered for the training, normalizes it for easier filtering
 def loadData(dataPath):
     with open(dataPath, 'r') as f:
         raw = json.load(f)
@@ -37,6 +40,8 @@ def loadData(dataPath):
     df['valuePct'] = df['qualityPerDollar'].rank(pct=True)
     return df
 
+
+#main function that takes in the df of the loaded file, then for each preference it will attempt to generate ratings for the inputs for the items based on static weights above in ratingParams
 def filter(df, preference):
     if preference == 'quality':
         range = (df['qualityPct'] >= 0.7) & (df['pricePct'] >= 0.2)
@@ -61,6 +66,8 @@ def filter(df, preference):
     ratingData['quantityRating'] = np.clip(np.random.normal(*qtParams, len(ratingData)), 1, 10).round().astype(int)
     return ratingData
 
+
+#saves the filtered data into files sorted by rating, quality ratings go into quality. The df taken in is the entire loaded df from the file, and the output is where all the files named after preferences are stored.
 def saveFiltered(df, outputDir="Data/filtered/"):
     os.makedirs(outputDir, exist_ok=True)
 

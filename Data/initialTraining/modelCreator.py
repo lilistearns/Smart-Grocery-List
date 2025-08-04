@@ -14,6 +14,7 @@ prefs = [
     'quality', 'price', 'quantity', 'balanced', 'premium', 'budget', 'bulk'
 ]
 
+#static preference Weights for sorting
 preferenceWeights = {
     'quality':  (0.4, 0.3, 0.3),
     'price':    (0.3, 0.4, 0.3),
@@ -25,6 +26,7 @@ preferenceWeights = {
 }
 
 
+#ranks the entire set of data by quality, price, and quantity. Then it gets a static range premade by development team, uses that range as a filter of what to copy over for training. Returns the twice filtered data.
 def filterDataByPreference(df, preference):
     df['qualityPct'] = df['quality'].rank(pct=True)
     df['pricePct'] = (1 - df['price'].rank(pct=True))  
@@ -52,9 +54,10 @@ def filterDataByPreference(df, preference):
 
     return df[mask].copy()
 
-
+#main trainer, for each prefernece it will go through the filtered item file and train based off of those items and their ratings. Uses static weights to find better weights and biases in the model, helps focus on the important preferences.
 def trainModel(data, preference):
-    weights = preferenceWeights.get(preference, (0.4, 0.3, 0.3))
+    #gets all the training data and normalizes
+    weights = preferenceWeights.get(preference)
     for item in data:
         item["quantity"] = dataFunctions.quantityNormalizer(item["quantity"])
         item["quality"] = float(item.get("quality", 1))
@@ -75,9 +78,11 @@ def trainModel(data, preference):
         filtered["quantity"] * qualityWeight
     )
 
+    #sets inputs
     X = filtered[["inv_price", "quantity", "quality"]].values
     y = filtered["rating"].values
 
+    #sets model layers 32 relu for actual training, final sigmoid for 0-1 output
     model = tf.keras.Sequential([
         tf.keras.layers.Input(shape=(3,)),
         tf.keras.layers.Dense(16, activation="relu"),
@@ -85,6 +90,7 @@ def trainModel(data, preference):
         tf.keras.layers.Dense(1, activation="sigmoid")
     ])
 
+    #compiles and trains
     model.compile(optimizer='adam', loss='mse')
     model.fit(X, y, epochs=100, verbose=1)
 
@@ -93,7 +99,7 @@ def trainModel(data, preference):
     model.save(os.path.join(modelDirectory, f"{preference}.h5"))
     print(f"Model for '{preference}' saved to {os.path.join(modelDirectory, f'{preference}.h5')}")
 
-
+#main function starts up the trainer for all preferences
 def main():
     for pref in prefs:
         fileName = f"./Data/filtered/{pref}TrainingData.json"  

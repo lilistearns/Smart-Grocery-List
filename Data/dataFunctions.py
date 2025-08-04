@@ -3,6 +3,8 @@ from sklearn.preprocessing import MinMaxScaler
 import mysql
 import mysql.connector
 
+
+#Used to establish database connection!
 #references:
 #   item.py.userQuery
 #   modelTrainer.py.
@@ -20,6 +22,8 @@ def dbConnect():
         return None
 
 
+
+#Used to normalize values
 #references:
 #   item.py.recommender
 #   modelTrainer.py.getTrainingData
@@ -33,6 +37,7 @@ def normalizer(data):
     )
     return data
 
+#Used to normalize quantity of items
 #references:
 #   item.py.itemRecommender
 #   item.py.listRecommender
@@ -60,6 +65,8 @@ def quantityNormalizer(quantityStr):
     return number * conversions.get(unit, 1)
 
 
+
+#Used to retrieve user information from the db
 #references:
 #   item.py.itemRecommender
 #   item.py.listRecommender
